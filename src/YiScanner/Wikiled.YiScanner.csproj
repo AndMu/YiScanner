@@ -13,6 +13,17 @@
 
   <ItemGroup>
     <PackageReference Include="FluentFTP" Version="19.1.1" />
+    <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="nlog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
