@@ -1,6 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.GZip;
+using ICSharpCode.SharpZipLib.Zip;
 using Wikiled.Core.Utility.Arguments;
 using Wikiled.YiScanner.Client;
 
@@ -27,19 +30,20 @@ namespace Wikiled.YiScanner.Destinations
             Guard.NotNull(() => header, header);
             Guard.NotNull(() => source, source);
             using (var memory = new MemoryStream())
-                using (var zipStream = new GZipOutputStream(memory))
-                {
-                    source.Position = 0;
-                    source.CopyTo(zipStream);
-                    zipStream.Flush();
-                    zipStream.Finish();
-                    memory.Position = 0;
+            using (var zipStream = new ZipOutputStream(memory))
+            {
+                ZipEntry entry = new ZipEntry(header.FileName);
+                zipStream.PutNextEntry(entry);
+                source.CopyTo(zipStream);
+                zipStream.Flush();
+                zipStream.Finish();
+                memory.Position = 0;
 
-                    await another.Transfer(
-                                     ConstructHeader(header),
-                                     memory)
-                                 .ConfigureAwait(false);
-                }
+                await another.Transfer(
+                                 ConstructHeader(header),
+                                 memory)
+                             .ConfigureAwait(false);
+            }
         }
 
         private static VideoHeader ConstructHeader(VideoHeader header)

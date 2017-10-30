@@ -67,24 +67,29 @@ namespace Wikiled.YiScanner.Client
 
         private async Task ProcessFile(FtpClient client, FtpListItem item)
         {
+            Stream stream  = null;
             try
             {
-                var stream = await client.OpenReadAsync(item.FullName).ConfigureAwait(false);
                 var header = new VideoHeader(camera, Path.GetFileName(item.FullName));
                 if (!destination.IsDownloaded(header))
                 {
                     log.Info("Downloading <{0}>", item.FullName);
+                    stream = await client.OpenReadAsync(item.FullName).ConfigureAwait(false);
                     await destination.Transfer(header, stream).ConfigureAwait(false);
+                    stream = null;
                 }
                 else
                 {
                     log.Info("File is already downloaded - <{0}>", item.FullName);
                 }
-
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 log.Error(ex);
+            }
+            finally
+            {
+                stream?.Dispose();
             }
         }
     }
