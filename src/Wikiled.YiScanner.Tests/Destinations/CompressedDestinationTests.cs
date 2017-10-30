@@ -1,4 +1,3 @@
-using Moq;
 using NUnit.Framework;
 using System;
 using System.IO;
@@ -6,7 +5,7 @@ using System.Threading.Tasks;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Destinations;
 
-namespace CWikiled.YiScanner.Tests.Destinations
+namespace Wikiled.YiScanner.Tests.Destinations
 {
     [TestFixture]
     public class CompressedDestinationTests
