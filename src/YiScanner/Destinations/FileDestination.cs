@@ -36,7 +36,7 @@ namespace Wikiled.YiScanner.Destinations
 
         private string GetFilePath(VideoHeader header)
         {
-            var dirDestination = Path.Combine(destination, header.Camera);
+            var dirDestination = Path.Combine(destination, header.Camera.Name);
             dirDestination.EnsureDirectoryExistence();
             var fileDestination = Path.Combine(dirDestination, Path.GetFileName(header.FileName));
             return fileDestination;

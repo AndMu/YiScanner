@@ -70,7 +70,7 @@ namespace Wikiled.YiScanner.Client
             try
             {
                 var stream = await client.OpenReadAsync(item.FullName).ConfigureAwait(false);
-                var header = new VideoHeader(camera.Name, Path.GetFileName(item.FullName));
+                var header = new VideoHeader(camera, Path.GetFileName(item.FullName));
                 if (!destination.IsDownloaded(header))
                 {
                     log.Info("Downloading <{0}>", item.FullName);

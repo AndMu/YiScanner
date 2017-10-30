@@ -45,7 +45,7 @@ namespace Wikiled.YiScanner.Tests.Destinations
         public async Task Transfer()
         {
             Assert.IsFalse(File.Exists(outFile));
-            VideoHeader header = new VideoHeader("camera", "test.txt");
+            VideoHeader header = new VideoHeader(new CameraDescription("camera", "localhost"), "test.txt");
             using (StreamReader reader = new StreamReader(Path.Combine(TestContext.CurrentContext.TestDirectory, "Data", "Test.txt")))
             {
                 await instance.Transfer(header, reader.BaseStream).ConfigureAwait(false);

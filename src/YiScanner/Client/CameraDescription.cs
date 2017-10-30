@@ -5,15 +5,16 @@ namespace Wikiled.YiScanner.Client
 {
     public class CameraDescription
     {
-        public CameraDescription(string name, IPAddress address)
+        public CameraDescription(string name, string address)
         {
             Guard.NotNull(() => name, name);
+            Guard.NotNull(() => address, address);
             Name = name;
             Address = address;
         }
 
         public string Name { get; }
 
-        public IPAddress Address { get; }
+        public string Address { get; }
     }
 }

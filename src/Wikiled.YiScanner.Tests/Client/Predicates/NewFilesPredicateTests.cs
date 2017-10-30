@@ -1,6 +1,5 @@
-using Moq;
-using NUnit.Framework;
 using System;
+using NUnit.Framework;
 using Wikiled.YiScanner.Client.Predicates;
 
 namespace Wikiled.YiScanner.Tests.Client.Predicates

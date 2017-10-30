@@ -67,7 +67,7 @@ namespace Wikiled.YiScanner.Commands
             {
                 ftpDownloaders.Add(
                     new FtpDownloader(
-                        new CameraDescription(listOfCameras[i], IPAddress.Parse(listOfHosts[i])),
+                        new CameraDescription(listOfCameras[i], listOfHosts[i]),
                         desitination,
                         ConstructPredicate()));
             }
