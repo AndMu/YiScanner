@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 
-namespace Wikiled.YiScanner.Client
+namespace Wikiled.YiScanner.Client.Predicates
 {
-    public class Analyzer : IAnalyzer
+    public class NewFilesPredicate : IPredicate
     {
         private readonly ConcurrentDictionary<string, bool> table = new ConcurrentDictionary<string, bool>();
 

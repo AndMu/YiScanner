@@ -16,6 +16,7 @@ namespace Wikiled.YiScanner
         {
             log.Info("Starting {0} version utility...", Assembly.GetExecutingAssembly().GetName().Version);
             List<Command> commandsList = new List<Command>();
+            commandsList.Add(new MonitorCommand());
             commandsList.Add(new DownloadCommand());
             var commands = commandsList.ToDictionary(item => item.Name, item => item, StringComparer.OrdinalIgnoreCase);
 

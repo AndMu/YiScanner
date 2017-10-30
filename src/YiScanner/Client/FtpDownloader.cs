@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentFTP;
 using NLog;
 using Wikiled.Core.Utility.Arguments;
+using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Destinations;
 
 namespace Wikiled.YiScanner.Client
@@ -17,18 +18,18 @@ namespace Wikiled.YiScanner.Client
 
         private readonly IDestination destination;
 
-        private readonly IAnalyzer analyzer;
+        private readonly IPredicate predicate;
 
         private DateTime? lastScan;
 
-        public FtpDownloader(CameraDescription camera, IDestination destination, IAnalyzer analyzer)
+        public FtpDownloader(CameraDescription camera, IDestination destination, IPredicate predicate)
         {
             Guard.NotNull(() => camera, camera);
             Guard.NotNull(() => destination, destination);
-            Guard.NotNull(() => analyzer, analyzer);
+            Guard.NotNull(() => predicate, predicate);
             this.camera = camera;
             this.destination = destination;
-            this.analyzer = analyzer;
+            this.predicate = predicate;
         }
 
         public async Task Download()
@@ -36,8 +37,10 @@ namespace Wikiled.YiScanner.Client
             // Get the object used to communicate with the server.  
             using (var client = new FtpClient(camera.Address.ToString()))
             {
+                log.Debug("Connecting: {0}", camera.Address);
                 client.Credentials = new NetworkCredential("root", string.Empty);
                 client.Connect();
+                log.Debug("Connected: {0}!", camera.Address);
                 await Retrieve(client, "/tmp/sd/record/").ConfigureAwait(false);
             }
 
@@ -50,17 +53,38 @@ namespace Wikiled.YiScanner.Client
             {
                 if (item.Type == FtpFileSystemObjectType.File)
                 {
-                    if (analyzer.CanDownload(lastScan, item.FullName, item.Modified))
+                    if (predicate.CanDownload(lastScan, item.FullName, item.Modified))
                     {
-                        log.Info("Downloading {0}", item.FullName);
-                        var stream = await client.OpenReadAsync(item.FullName).ConfigureAwait(false);
-                        await destination.Transfer(new VideoHeader(camera.Name, Path.GetFileName(item.FullName)), stream).ConfigureAwait(false);
+                        await ProcessFile(client, item).ConfigureAwait(false);
                     }
                 }
                 else if (item.Type == FtpFileSystemObjectType.Directory)
                 {
                     await Retrieve(client, item.FullName).ConfigureAwait(false);
                 }
+            }
+        }
+
+        private async Task ProcessFile(FtpClient client, FtpListItem item)
+        {
+            try
+            {
+                var stream = await client.OpenReadAsync(item.FullName).ConfigureAwait(false);
+                var header = new VideoHeader(camera.Name, Path.GetFileName(item.FullName));
+                if (!destination.IsDownloaded(header))
+                {
+                    log.Info("Downloading <{0}>", item.FullName);
+                    await destination.Transfer(header, stream).ConfigureAwait(false);
+                }
+                else
+                {
+                    log.Info("File is already downloaded - <{0}>", item.FullName);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
             }
         }
     }

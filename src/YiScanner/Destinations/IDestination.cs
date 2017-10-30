@@ -7,5 +7,7 @@ namespace Wikiled.YiScanner.Destinations
     public interface IDestination
     {
         Task Transfer(VideoHeader header, Stream source);
+
+        bool IsDownloaded(VideoHeader header);
     }
 }

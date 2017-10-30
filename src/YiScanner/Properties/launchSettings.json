@@ -2,7 +2,7 @@
   "profiles": {
     "Wikiled.YiScanner": {
       "commandName": "Project",
-      "commandLineArgs": "Download -Cameras=1080i -Hosts=192.168.0.202 -Compress -Out=c:\\out -Scan=10"
+      "commandLineArgs": "monitor -Cameras=1080i -Hosts=192.168.0.202 -Compress -Out=c:\\out -Scan=1"
     }
   }
 }
