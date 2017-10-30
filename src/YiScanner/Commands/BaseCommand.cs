@@ -29,6 +29,9 @@ namespace Wikiled.YiScanner.Commands
         [Description("File destination")]
         public string Out { get; set; }
 
+        [Description("Archive video after days")]
+        public int? Archive { get; set; }
+
         public override void Execute()
         {
             log.Info("Starting camera download...");

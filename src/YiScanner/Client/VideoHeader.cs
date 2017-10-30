@@ -4,15 +4,15 @@ namespace Wikiled.YiScanner.Client
 {
     public class VideoHeader
     {
-        public VideoHeader(string camera, string fileName)
+        public VideoHeader(CameraDescription camera, string fileName)
         {
-            Guard.NotNullOrEmpty(() => camera, camera);
+            Guard.NotNull(() => camera, camera);
             Guard.NotNullOrEmpty(() => fileName, fileName);
             Camera = camera;
             FileName = fileName;
         }
 
-        public string Camera { get; }
+        public CameraDescription Camera { get; }
 
         public string FileName { get; }
     }

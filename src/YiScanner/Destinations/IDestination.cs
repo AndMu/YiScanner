@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Wikiled.YiScanner.Client;
 
@@ -9,5 +10,7 @@ namespace Wikiled.YiScanner.Destinations
         Task Transfer(VideoHeader header, Stream source);
 
         bool IsDownloaded(VideoHeader header);
+
+        Task Archive(TimeSpan before);
     }
 }

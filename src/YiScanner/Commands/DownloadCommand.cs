@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using NLog;
 using Wikiled.YiScanner.Client;
+using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Client.Predicates;
 
 namespace Wikiled.YiScanner.Commands
@@ -20,6 +22,13 @@ namespace Wikiled.YiScanner.Commands
         {
             log.Info("Press enter to stop monitoring...");
             var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download());
+            var archiving = new DeleteArchiving();
+            if (Archive.HasValue)
+            {
+                log.Info("Archiving...");
+                archiving.Archive(Out, TimeSpan.FromDays(Archive.Value));
+            }
+
             Task.WhenAll(tasks).Wait();
         }
 

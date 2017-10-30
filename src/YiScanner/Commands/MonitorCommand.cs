@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Wikiled.YiScanner.Client;
+using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Client.Predicates;
 
 namespace Wikiled.YiScanner.Commands
@@ -44,12 +45,29 @@ namespace Wikiled.YiScanner.Commands
                                        .Select(item => Download(downloaders))
                                        .Replay();
             observable.Connect();
+
+            if (Archive.HasValue)
+            {
+                var archiving = Observable.Interval(TimeSpan.FromDays(1))
+                                       .Select(item => Archiving())
+                                       .Replay();
+                archiving.Connect();
+            }
+
             Console.ReadLine();
         }
 
         protected override IPredicate ConstructPredicate()
         {
             return new NewFilesPredicate();
+        }
+
+        private bool Archiving()
+        {
+            var archiving = new DeleteArchiving();
+            log.Info("Archiving...");
+            archiving.Archive(Out, TimeSpan.FromDays(Archive.Value));
+            return true;
         }
     }
 }
