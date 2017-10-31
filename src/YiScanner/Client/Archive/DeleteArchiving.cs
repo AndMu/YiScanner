@@ -11,23 +11,30 @@ namespace Wikiled.YiScanner.Client.Archive
 
         public void Archive(string destination, TimeSpan time)
         {
+            if (!Directory.Exists(destination))
+            {
+                return;
+            }
+
             var files = Directory.EnumerateFiles(destination, "*", SearchOption.AllDirectories);
             DateTime cutOff = DateTime.Today.Subtract(time);
-            Parallel.ForEach(files, file =>
-            {
-                try
-                {
-                    var info = new FileInfo(file);
-                    if (info.CreationTime < cutOff)
+            Parallel.ForEach(
+                files,
+                file =>
                     {
-                        File.Delete(file);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    log.Error(ex);
-                }
-            });
+                        try
+                        {
+                            var info = new FileInfo(file);
+                            if (info.CreationTime < cutOff)
+                            {
+                                File.Delete(file);
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            log.Error(ex);
+                        }
+                    });
         }
     }
 }
