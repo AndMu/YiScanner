@@ -89,6 +89,16 @@ namespace Wikiled.YiScanner.Client
                     log.Info("Downloading <{0}>", item.FullName);
                     stream = await client.OpenReadAsync(item.FullName).ConfigureAwait(false);
                     await destination.Transfer(header, stream).ConfigureAwait(false);
+                    var reply = await client.GetReplyAsync().ConfigureAwait(false);
+                    if (reply.Success)
+                    {
+                        log.Info("Downloaded: Success:{0} Message:{1}: Type:{2} Code:{3}", reply.Success, reply.Message, reply.Type, reply.Code);
+                    }
+                    else
+                    {
+                        log.Error("Downloaded: Error:{0} Type:{1}: Code:{2}", reply.ErrorMessage, reply.Type, reply.Code);
+                    }
+
                     stream = null;
                 }
                 else
