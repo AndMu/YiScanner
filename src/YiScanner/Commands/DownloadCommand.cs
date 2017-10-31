@@ -11,7 +11,7 @@ using Wikiled.YiScanner.Client.Predicates;
 namespace Wikiled.YiScanner.Commands
 {
     /// <summary>
-    ///     Download -Cameras=1080i -Hosts=192.168.0.202 -Compress -Out=c:\out -Scan=10
+    ///     Download -Cameras=1080i -Hosts=192.168.0.202 -Compress -Out=c:\out -Scan=10 [-Archive=2]
     /// </summary>
     [Description("Download video from camera")]
     public class DownloadCommand : BaseCommand
