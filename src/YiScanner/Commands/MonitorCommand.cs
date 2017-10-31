@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using NLog;
@@ -37,20 +39,20 @@ namespace Wikiled.YiScanner.Commands
         protected override void ProcessFtp(List<FtpDownloader> downloaders)
         {
             log.Info("Press enter to stop monitoring...");
-            var observable = Observable.Interval(TimeSpan.FromSeconds(Scan))
-                                       .Select(item => Download(downloaders))
-                                       .StartWith(Download(downloaders))
-                                       .Replay();
-            observable.Connect();
-
             if (Archive.HasValue)
             {
-                var archiving = Observable.Interval(TimeSpan.FromDays(1))
+                var archiving = Observable.Interval(TimeSpan.FromDays(1), TaskPoolScheduler.Default)
                                           .Select(item => Archiving())
                                           .StartWith(Archiving())
                                           .Replay();
                 archiving.Connect();
             }
+
+            var observable = Observable.Interval(TimeSpan.FromSeconds(Scan), TaskPoolScheduler.Default)
+                                       .Select(item => Download(downloaders))
+                                       .StartWith(Download(downloaders))
+                                       .Replay();
+            observable.Connect();
 
             Console.ReadLine();
         }
