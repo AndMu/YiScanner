@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using NLog;
 using Wikiled.Core.Utility.Arguments;
 using Wikiled.YiScanner.Client;
@@ -17,21 +17,23 @@ namespace Wikiled.YiScanner
 
         public static void Main(string[] args)
         {
-            var configurationBuilder = new ConfigurationBuilder()  
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
-            var configuration = configurationBuilder.Build();
-            FtpConfiguration ftpConfiguration = new FtpConfiguration();
-            configuration.GetSection("ftp").Bind(ftpConfiguration);
-
-            log.Info("Starting {0} version utility...", Assembly.GetExecutingAssembly().GetName().Version);
-            List<Command> commandsList = new List<Command>();
-            commandsList.Add(new MonitorCommand(ftpConfiguration));
-            commandsList.Add(new DownloadCommand(ftpConfiguration));
-            var commands = commandsList.ToDictionary(item => item.Name, item => item, StringComparer.OrdinalIgnoreCase);
-
             try
             {
+                if (!File.Exists("appsettings.json"))
+                {
+                    log.Error("Configuration file appsettings.json not found");
+                    return;
+                }
+
+                JObject ftpBlock = JObject.Parse(File.ReadAllText("appsettings.json"));
+                FtpConfiguration ftpConfiguration = ftpBlock["ftp"].ToObject<FtpConfiguration>();
+
+                log.Info("Starting {0} version utility...", Assembly.GetExecutingAssembly().GetName().Version);
+                List<Command> commandsList = new List<Command>();
+                commandsList.Add(new MonitorCommand(ftpConfiguration));
+                commandsList.Add(new DownloadCommand(ftpConfiguration));
+                var commands = commandsList.ToDictionary(item => item.Name, item => item, StringComparer.OrdinalIgnoreCase);
+
                 if (args.Length == 0)
                 {
                     log.Warn("Please specify arguments");
