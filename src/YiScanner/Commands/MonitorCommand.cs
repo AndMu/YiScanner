@@ -78,7 +78,7 @@ namespace Wikiled.YiScanner.Commands
                 log.Error(ex);
             }
 
-            log.Info("Checking Ftp. Done.");
+            log.Info("Done!");
         }
     }
 }
