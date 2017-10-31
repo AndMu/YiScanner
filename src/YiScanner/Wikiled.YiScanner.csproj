@@ -24,6 +24,7 @@
   <ItemGroup>
     <None Update="appsettings.json">
       <Generator>SettingsSingleFileGenerator</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="nlog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
