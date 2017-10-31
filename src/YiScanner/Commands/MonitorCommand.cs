@@ -46,6 +46,7 @@ namespace Wikiled.YiScanner.Commands
             {
                 var archiving = Observable.Interval(TimeSpan.FromDays(1))
                                           .Select(item => Archiving())
+                                          .StartWith(Archiving())
                                           .Replay();
                 archiving.Connect();
             }
@@ -63,7 +64,7 @@ namespace Wikiled.YiScanner.Commands
 
         private async Task Download(List<FtpDownloader> downloaders)
         {
-            log.Info("Starting download....");
+            log.Info("Checking Ftp....");
             try
             {
                 var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download());

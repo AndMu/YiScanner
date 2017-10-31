@@ -30,7 +30,7 @@ namespace Wikiled.YiScanner.Destinations
             using (var zipStream = new ZipOutputStream(memory))
             {
                 zipStream.SetLevel(9);
-                ZipEntry entry = new ZipEntry(header.FileName);
+                ZipEntry entry = new ZipEntry(Path.GetFileName(header.FileName));
                 zipStream.PutNextEntry(entry);
                 source.CopyTo(zipStream);
                 zipStream.Flush();
