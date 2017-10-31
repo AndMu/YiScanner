@@ -8,5 +8,7 @@
 
         public string Login { get; set; }
 
+        public string FileMask { get; set; }
+
     }
 }

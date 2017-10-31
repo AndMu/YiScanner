@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FluentFTP;
 using NLog;
@@ -24,12 +25,15 @@ namespace Wikiled.YiScanner.Client
 
         private DateTime? lastScan;
 
+        private Regex maskRegex;
+
         public FtpDownloader(FtpConfiguration configuration, CameraDescription camera, IDestination destination, IPredicate predicate)
         {
             Guard.NotNull(() => configuration, configuration);
             Guard.NotNull(() => camera, camera);
             Guard.NotNull(() => destination, destination);
             Guard.NotNull(() => predicate, predicate);
+            maskRegex = FileMask.GenerateFitMask(configuration.FileMask);
             this.camera = camera;
             this.destination = destination;
             this.predicate = predicate;
@@ -57,9 +61,14 @@ namespace Wikiled.YiScanner.Client
             {
                 if (item.Type == FtpFileSystemObjectType.File)
                 {
-                    if (predicate.CanDownload(lastScan, item.FullName, item.Modified))
+                    if (maskRegex.IsMatch(item.FullName) &&
+                        predicate.CanDownload(lastScan, item.FullName, item.Modified))
                     {
                         await ProcessFile(client, item).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        log.Debug("Ignoring file: <{0}>", item.FullName);
                     }
                 }
                 else if (item.Type == FtpFileSystemObjectType.Directory)
