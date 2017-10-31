@@ -38,7 +38,9 @@ namespace Wikiled.YiScanner.Destinations
         {
             var dirDestination = Path.Combine(destination, header.Camera.Name);
             dirDestination.EnsureDirectoryExistence();
-            var fileDestination = Path.Combine(dirDestination, Path.GetFileName(header.FileName));
+            var fileName = Path.GetFileName(header.FileName);
+            var dirName = Path.GetDirectoryName(header.FileName);
+            var fileDestination = Path.Combine(dirDestination, dirName, fileName);
             return fileDestination;
         }
     }

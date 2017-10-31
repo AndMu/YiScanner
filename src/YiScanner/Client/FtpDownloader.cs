@@ -35,7 +35,7 @@ namespace Wikiled.YiScanner.Client
         public async Task Download()
         {
             // Get the object used to communicate with the server.  
-            using (var client = new FtpClient(camera.Address.ToString()))
+            using (var client = new FtpClient(camera.Address))
             {
                 log.Debug("Connecting: {0}", camera.Address);
                 client.Credentials = new NetworkCredential("root", string.Empty);
@@ -67,7 +67,7 @@ namespace Wikiled.YiScanner.Client
 
         private async Task ProcessFile(FtpClient client, FtpListItem item)
         {
-            Stream stream  = null;
+            Stream stream = null;
             try
             {
                 var header = new VideoHeader(camera, Path.GetFileName(item.FullName));
@@ -83,7 +83,7 @@ namespace Wikiled.YiScanner.Client
                     log.Info("File is already downloaded - <{0}>", item.FullName);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.Error(ex);
             }
