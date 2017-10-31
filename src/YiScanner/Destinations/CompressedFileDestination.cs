@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
-using ICSharpCode.SharpZipLib.Core;
-using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Zip;
 using Wikiled.Core.Utility.Arguments;
 using Wikiled.YiScanner.Client;
@@ -32,6 +29,7 @@ namespace Wikiled.YiScanner.Destinations
             using (var memory = new MemoryStream())
             using (var zipStream = new ZipOutputStream(memory))
             {
+                zipStream.SetLevel(9);
                 ZipEntry entry = new ZipEntry(header.FileName);
                 zipStream.PutNextEntry(entry);
                 source.CopyTo(zipStream);
