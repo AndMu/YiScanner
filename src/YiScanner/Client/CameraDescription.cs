@@ -1,5 +1,4 @@
-﻿using System.Net;
-using Wikiled.Core.Utility.Arguments;
+﻿using Wikiled.Core.Utility.Arguments;
 
 namespace Wikiled.YiScanner.Client
 {

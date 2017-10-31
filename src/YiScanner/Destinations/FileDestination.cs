@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Wikiled.Core.Utility.Arguments;
-using Wikiled.Core.Utility.Extensions;
 using Wikiled.YiScanner.Client;
 
 namespace Wikiled.YiScanner.Destinations
@@ -19,7 +18,7 @@ namespace Wikiled.YiScanner.Destinations
         public bool IsDownloaded(VideoHeader header)
         {
             Guard.NotNull(() => header, header);
-            var fileDestination = GetFilePath(header);
+            var fileDestination = header.GetPath(destination);
             return File.Exists(fileDestination);
         }
 
@@ -27,22 +26,11 @@ namespace Wikiled.YiScanner.Destinations
         {
             Guard.NotNull(() => header, header);
             Guard.NotNull(() => source, source);
-            var fileDestination = GetFilePath(header);
+            var fileDestination = header.GetPath(destination);
             using (StreamWriter write = new StreamWriter(fileDestination))
             {
                 await source.CopyToAsync(write.BaseStream).ConfigureAwait(false);
             }
-        }
-
-        private string GetFilePath(VideoHeader header)
-        {
-            var fileName = Path.GetFileName(header.FileName);
-            var dirName = Path.GetDirectoryName(header.FileName);
-            dirName = Path.GetFileName(dirName);
-            var dirDestination = Path.Combine(destination, header.Camera.Name, dirName);
-            dirDestination.EnsureDirectoryExistence();
-            var fileDestination = Path.Combine(dirDestination, fileName);
-            return fileDestination;
         }
     }
 }

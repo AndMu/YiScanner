@@ -20,16 +20,20 @@ namespace Wikiled.YiScanner.Client
 
         private readonly IPredicate predicate;
 
+        private readonly FtpConfiguration configuration;
+
         private DateTime? lastScan;
 
-        public FtpDownloader(CameraDescription camera, IDestination destination, IPredicate predicate)
+        public FtpDownloader(FtpConfiguration configuration, CameraDescription camera, IDestination destination, IPredicate predicate)
         {
+            Guard.NotNull(() => configuration, configuration);
             Guard.NotNull(() => camera, camera);
             Guard.NotNull(() => destination, destination);
             Guard.NotNull(() => predicate, predicate);
             this.camera = camera;
             this.destination = destination;
             this.predicate = predicate;
+            this.configuration = configuration;
         }
 
         public async Task Download()
@@ -38,10 +42,10 @@ namespace Wikiled.YiScanner.Client
             using (var client = new FtpClient(camera.Address))
             {
                 log.Debug("Connecting: {0}", camera.Address);
-                client.Credentials = new NetworkCredential("root", string.Empty);
+                client.Credentials = new NetworkCredential(configuration.Login, configuration.Password);
                 client.Connect();
                 log.Debug("Connected: {0}!", camera.Address);
-                await Retrieve(client, "/tmp/sd/record/").ConfigureAwait(false);
+                await Retrieve(client, configuration.Path).ConfigureAwait(false);
             }
 
             lastScan = DateTime.Now;

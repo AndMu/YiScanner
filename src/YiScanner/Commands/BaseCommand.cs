@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Net;
 using NLog;
 using Wikiled.Core.Utility.Arguments;
 using Wikiled.YiScanner.Client;
@@ -13,6 +12,14 @@ namespace Wikiled.YiScanner.Commands
     public abstract class BaseCommand : Command
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
+        private readonly FtpConfiguration ftpConfiguration;
+
+        protected BaseCommand(FtpConfiguration ftpConfiguration)
+        {
+            Guard.NotNull(() => ftpConfiguration, ftpConfiguration);
+            this.ftpConfiguration = ftpConfiguration;
+        }
 
         [Required]
         [Description("List of camera names")]
@@ -67,6 +74,7 @@ namespace Wikiled.YiScanner.Commands
             {
                 ftpDownloaders.Add(
                     new FtpDownloader(
+                        ftpConfiguration,
                         new CameraDescription(listOfCameras[i], listOfHosts[i]),
                         desitination,
                         ConstructPredicate()));

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Configuration;
 using NLog;
 using Wikiled.Core.Utility.Arguments;
+using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Commands;
 
 namespace Wikiled.YiScanner
@@ -14,10 +17,17 @@ namespace Wikiled.YiScanner
 
         public static void Main(string[] args)
         {
+            var configurationBuilder = new ConfigurationBuilder()  
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+            var configuration = configurationBuilder.Build();
+            FtpConfiguration ftpConfiguration = new FtpConfiguration();
+            configuration.GetSection("ftp").Bind(ftpConfiguration);
+
             log.Info("Starting {0} version utility...", Assembly.GetExecutingAssembly().GetName().Version);
             List<Command> commandsList = new List<Command>();
-            commandsList.Add(new MonitorCommand());
-            commandsList.Add(new DownloadCommand());
+            commandsList.Add(new MonitorCommand(ftpConfiguration));
+            commandsList.Add(new DownloadCommand(ftpConfiguration));
             var commands = commandsList.ToDictionary(item => item.Name, item => item, StringComparer.OrdinalIgnoreCase);
 
             try

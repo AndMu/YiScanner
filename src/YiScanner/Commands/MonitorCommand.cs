@@ -13,29 +13,25 @@ using Wikiled.YiScanner.Client.Predicates;
 namespace Wikiled.YiScanner.Commands
 {
     /// <summary>
-    /// Monitor -Cameras=1080i -Hosts=192.168.0.202 -Compress -Out=c:\out -Scan=10
+    ///     Monitor -Cameras=1080i -Hosts=192.168.0.202 -Compress -Out=c:\out -Scan=10
     /// </summary>
     [Description("Monitor new video from cameras")]
     public class MonitorCommand : BaseCommand
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
+        public MonitorCommand(FtpConfiguration ftpConfiguration)
+            : base(ftpConfiguration)
+        {
+        }
+
         [Required]
         [Description("Scan interval in second")]
         public int Scan { get; set; }
 
-        private async Task Download(List<FtpDownloader> downloaders)
+        protected override IPredicate ConstructPredicate()
         {
-            log.Info("Starting download....");
-            try
-            {
-                var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download());
-                await Task.WhenAll(tasks).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex);
-            }
+            return new NewFilesPredicate();
         }
 
         protected override void ProcessFtp(List<FtpDownloader> downloaders)
@@ -49,17 +45,12 @@ namespace Wikiled.YiScanner.Commands
             if (Archive.HasValue)
             {
                 var archiving = Observable.Interval(TimeSpan.FromDays(1))
-                                       .Select(item => Archiving())
-                                       .Replay();
+                                          .Select(item => Archiving())
+                                          .Replay();
                 archiving.Connect();
             }
 
             Console.ReadLine();
-        }
-
-        protected override IPredicate ConstructPredicate()
-        {
-            return new NewFilesPredicate();
         }
 
         private bool Archiving()
@@ -68,6 +59,20 @@ namespace Wikiled.YiScanner.Commands
             log.Info("Archiving...");
             archiving.Archive(Out, TimeSpan.FromDays(Archive.Value));
             return true;
+        }
+
+        private async Task Download(List<FtpDownloader> downloaders)
+        {
+            log.Info("Starting download....");
+            try
+            {
+                var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download());
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
         }
     }
 }
