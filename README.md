@@ -20,3 +20,7 @@ Options:
 - **Out** - location of downloaded files
 - **Scan** - frequency of FTP scan (in seconds)
 - **Archive** - delete previously downloaded old files. Number specifies how many days you want to keep history
+
+
+# FTP configuration 
+FTP configuration can be modified in file **appsettings.json**
