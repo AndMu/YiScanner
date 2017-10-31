@@ -39,6 +39,7 @@ namespace Wikiled.YiScanner.Commands
             log.Info("Press enter to stop monitoring...");
             var observable = Observable.Interval(TimeSpan.FromSeconds(Scan))
                                        .Select(item => Download(downloaders))
+                                       .StartWith(Download(downloaders))
                                        .Replay();
             observable.Connect();
 
