@@ -5,7 +5,7 @@ using NLog;
 
 namespace Wikiled.YiScanner.Client.Archive
 {
-    public class DeleteArchiving 
+    public class DeleteArchiving
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
@@ -27,10 +27,11 @@ namespace Wikiled.YiScanner.Client.Archive
                             var info = new FileInfo(file);
                             if (info.CreationTime < cutOff)
                             {
+                                log.Debug("Deleting: {0}", file);
                                 File.Delete(file);
                             }
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             log.Error(ex);
                         }

@@ -10,5 +10,7 @@
 
         public string FileMask { get; set; }
 
+        public bool DeleteOnTransfer { get; set; }
+
     }
 }

@@ -25,7 +25,7 @@ namespace Wikiled.YiScanner.Client
 
         private DateTime? lastScan;
 
-        private Regex maskRegex;
+        private readonly Regex maskRegex;
 
         public FtpDownloader(FtpConfiguration configuration, CameraDescription camera, IDestination destination, IPredicate predicate)
         {
@@ -86,24 +86,29 @@ namespace Wikiled.YiScanner.Client
                 var header = new VideoHeader(camera, item.FullName);
                 if (!destination.IsDownloaded(header))
                 {
-                    log.Info("Downloading <{0}>", item.FullName);
+                    log.Info("Downloading <{0}> from [{1}]", item.FullName, camera.Name);
                     stream = await client.OpenReadAsync(item.FullName).ConfigureAwait(false);
                     await destination.Transfer(header, stream).ConfigureAwait(false);
                     var reply = await client.GetReplyAsync().ConfigureAwait(false);
                     if (reply.Success)
                     {
-                        log.Info("Download Success:{0} Message:{1}: Type:{2} Code:{3}", reply.Success, reply.Message, reply.Type, reply.Code);
+                        log.Info("Download Success:{0} Message:{1}: Type:{2} Code:{3} From: [{4}]", reply.Success, reply.Message, reply.Type, reply.Code, camera.Name);
                     }
                     else
                     {
-                        log.Error("Download Error:{0} Type:{1}: Code:{2}", reply.ErrorMessage, reply.Type, reply.Code);
+                        log.Error("Download Error:{0} Type:{1}: Code:{2} From: [{3}]", reply.ErrorMessage, reply.Type, reply.Code, camera.Name);
                     }
 
                     stream = null;
+                    if (configuration.DeleteOnTransfer)
+                    {
+                        log.Info("Delete - <{0}> {1}", item.FullName, camera.Name);
+                        await client.DeleteFileAsync(item.FullName).ConfigureAwait(false);
+                    }
                 }
                 else
                 {
-                    log.Info("File is already downloaded - <{0}>", item.FullName);
+                    log.Info("File is already downloaded - <{0}> {1}", item.FullName, camera.Name);
                 }
             }
             catch (Exception ex)

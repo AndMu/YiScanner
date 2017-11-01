@@ -62,6 +62,7 @@ namespace Wikiled.YiScanner.Commands
             var archiving = new DeleteArchiving();
             log.Info("Archiving...");
             archiving.Archive(Out, TimeSpan.FromDays(Archive.Value));
+            log.Info("Archiving. Done!");
             return true;
         }
 
