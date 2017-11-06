@@ -73,7 +73,7 @@ namespace Wikiled.YiScanner.Monitoring
 
         private async Task Download()
         {
-            log.Debug("Checking Ftp....");
+            log.Info("Checking Ftp....");
             try
             {
                 var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download());
@@ -84,7 +84,7 @@ namespace Wikiled.YiScanner.Monitoring
                 log.Error(ex);
             }
 
-            log.Debug("Done!");
+            log.Info("Done!");
         }
     }
 }

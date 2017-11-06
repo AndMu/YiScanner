@@ -32,32 +32,20 @@ namespace Wikiled.YiScanner
                 JObject ftpBlock = JObject.Parse(File.ReadAllText("appsettings.json"));
                 FtpConfiguration ftpConfiguration = ftpBlock["ftp"].ToObject<FtpConfiguration>();
 
-                if (args.Length == 0)
-                {
-                    log.Info("Starting as service");
-                    StartService(ftpConfiguration);
-                    return;
-                }
-
                 log.Info("Starting {0} version utility...", Assembly.GetExecutingAssembly().GetName().Version);
                 List<Command> commandsList = new List<Command>();
                 commandsList.Add(new MonitorCommand(ftpConfiguration));
                 commandsList.Add(new DownloadCommand(ftpConfiguration));
                 var commands = commandsList.ToDictionary(item => item.Name, item => item, StringComparer.OrdinalIgnoreCase);
 
-                if (args.Length == 0)
+                if (args.Length == 0 ||
+                    !commands.TryGetValue(args[0], out var command))
                 {
-                    log.Warn("Please specify arguments");
-                    CommandLineParser.PrintCommands(commands.Values);
+                    log.Info("Starting as service");
+                    StartService(ftpConfiguration);
                     return;
                 }
-
-                if (!commands.TryGetValue(args[0], out var command))
-                {
-                    log.Error("Unknown Command");
-                    return;
-                }
-
+                
                 command.ParseArguments(args.Skip(1));
                 command.Execute();
             }

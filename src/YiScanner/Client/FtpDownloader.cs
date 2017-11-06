@@ -49,12 +49,12 @@ namespace Wikiled.YiScanner.Client
             // Get the object used to communicate with the server.  
             using (var client = new FtpClient(camera.Address))
             {
-                log.Debug("Connecting: {0}", camera.Address);
+                log.Info("Connecting: {0}", camera.Address);
                 client.Credentials = new NetworkCredential(
                     configuration.Login,
                     configuration.Password);
                 client.Connect();
-                log.Debug("Connected: {0}!", camera.Address);
+                log.Info("Connected: {0}!", camera.Address);
                 await Retrieve(client, configuration.Path).ConfigureAwait(false);
             }
 
