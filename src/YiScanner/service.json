@@ -1,0 +1,8 @@
+﻿{
+  "Scan": 30,
+  "Cameras": "1080i,720p",
+  "Hosts": "192.168.0.103,192.168.0.129",
+  "Compress": false,
+  "Archive": 2,
+  "Out": "D:/Cloud/GoogleUni/Camera/Monitor"
+}

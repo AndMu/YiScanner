@@ -13,21 +13,25 @@ namespace Wikiled.YiScanner.Client
 {
     public class FtpDownloader
     {
-        private static readonly Logger log = LogManager.GetCurrentClassLogger();
-
         private readonly CameraDescription camera;
-
-        private readonly IDestination destination;
-
-        private readonly IPredicate predicate;
 
         private readonly FtpConfiguration configuration;
 
-        private DateTime? lastScan;
+        private readonly IDestination destination;
+
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
         private readonly Regex maskRegex;
 
-        public FtpDownloader(FtpConfiguration configuration, CameraDescription camera, IDestination destination, IPredicate predicate)
+        private readonly IPredicate predicate;
+
+        private DateTime? lastScan;
+
+        public FtpDownloader(
+            FtpConfiguration configuration,
+            CameraDescription camera,
+            IDestination destination,
+            IPredicate predicate)
         {
             Guard.NotNull(() => configuration, configuration);
             Guard.NotNull(() => camera, camera);
@@ -46,36 +50,15 @@ namespace Wikiled.YiScanner.Client
             using (var client = new FtpClient(camera.Address))
             {
                 log.Debug("Connecting: {0}", camera.Address);
-                client.Credentials = new NetworkCredential(configuration.Login, configuration.Password);
+                client.Credentials = new NetworkCredential(
+                    configuration.Login,
+                    configuration.Password);
                 client.Connect();
                 log.Debug("Connected: {0}!", camera.Address);
                 await Retrieve(client, configuration.Path).ConfigureAwait(false);
             }
 
             lastScan = DateTime.Now;
-        }
-
-        private async Task Retrieve(FtpClient client, string path)
-        {
-            foreach (FtpListItem item in client.GetListing(path))
-            {
-                if (item.Type == FtpFileSystemObjectType.File)
-                {
-                    if (maskRegex.IsMatch(item.FullName) &&
-                        predicate.CanDownload(lastScan, item.FullName, item.Modified))
-                    {
-                        await ProcessFile(client, item).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        log.Debug("Ignoring file: <{0}>", item.FullName);
-                    }
-                }
-                else if (item.Type == FtpFileSystemObjectType.Directory)
-                {
-                    await Retrieve(client, item.FullName).ConfigureAwait(false);
-                }
-            }
         }
 
         private async Task ProcessFile(FtpClient client, FtpListItem item)
@@ -92,11 +75,22 @@ namespace Wikiled.YiScanner.Client
                     var reply = await client.GetReplyAsync().ConfigureAwait(false);
                     if (reply.Success)
                     {
-                        log.Info("Download Success:{0} Message:{1}: Type:{2} Code:{3} From: [{4}]", reply.Success, reply.Message, reply.Type, reply.Code, camera.Name);
+                        log.Info(
+                            "Download Success:{0} Message:{1}: Type:{2} Code:{3} From: [{4}]",
+                            reply.Success,
+                            reply.Message,
+                            reply.Type,
+                            reply.Code,
+                            camera.Name);
                     }
                     else
                     {
-                        log.Error("Download Error:{0} Type:{1}: Code:{2} From: [{3}]", reply.ErrorMessage, reply.Type, reply.Code, camera.Name);
+                        log.Error(
+                            "Download Error:{0} Type:{1}: Code:{2} From: [{3}]",
+                            reply.ErrorMessage,
+                            reply.Type,
+                            reply.Code,
+                            camera.Name);
                     }
 
                     stream = null;
@@ -111,13 +105,36 @@ namespace Wikiled.YiScanner.Client
                     log.Info("File is already downloaded - <{0}> {1}", item.FullName, camera.Name);
                 }
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 log.Error(ex);
             }
             finally
             {
                 stream?.Dispose();
+            }
+        }
+
+        private async Task Retrieve(FtpClient client, string path)
+        {
+            foreach (FtpListItem item in client.GetListing(path))
+            {
+                if (item.Type == FtpFileSystemObjectType.File)
+                {
+                    if (maskRegex.IsMatch(item.FullName)
+                        && predicate.CanDownload(lastScan, item.FullName, item.Modified))
+                    {
+                        await ProcessFile(client, item).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        log.Debug("Ignoring file: <{0}>", item.FullName);
+                    }
+                }
+                else if (item.Type == FtpFileSystemObjectType.Directory)
+                {
+                    await Retrieve(client, item.FullName).ConfigureAwait(false);
+                }
             }
         }
     }

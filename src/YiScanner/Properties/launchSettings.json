@@ -1,8 +1,7 @@
 {
   "profiles": {
     "Wikiled.YiScanner": {
-      "commandName": "Project",
-      "commandLineArgs": "monitor -Cameras=1080i,720p -Hosts=192.168.0.103,192.168.0.129 -Out=D:\\Cloud\\GoogleUni\\Camera\\Monitor -Archive=2 -Scan=30"
+      "commandName": "Project"
     }
   }
 }

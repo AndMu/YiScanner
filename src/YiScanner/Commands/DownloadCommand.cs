@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +6,7 @@ using NLog;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Client.Predicates;
+using Wikiled.YiScanner.Monitoring;
 
 namespace Wikiled.YiScanner.Commands
 {
@@ -28,9 +28,14 @@ namespace Wikiled.YiScanner.Commands
             return new NullPredicate();
         }
 
-        protected override void ProcessFtp(List<FtpDownloader> downloaders)
+        protected override void ProcessFtp(IDestinationFactory factory)
         {
-            log.Info("Press enter to stop monitoring...");
+            var downloaders = factory.GetDestinations();
+            if (downloaders.Length == 0)
+            {
+                return;
+            }
+
             var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download());
             var archiving = new DeleteArchiving();
             if (Archive.HasValue)
