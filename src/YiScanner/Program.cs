@@ -23,13 +23,14 @@ namespace Wikiled.YiScanner
         {
             try
             {
-                if (!File.Exists("appsettings.json"))
+                var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                if (!File.Exists(Path.Combine(directory, "appsettings.json")))
                 {
                     log.Error("Configuration file appsettings.json not found");
                     return;
                 }
 
-                JObject ftpBlock = JObject.Parse(File.ReadAllText("appsettings.json"));
+                JObject ftpBlock = JObject.Parse(File.ReadAllText(Path.Combine(directory, "appsettings.json")));
                 FtpConfiguration ftpConfiguration = ftpBlock["ftp"].ToObject<FtpConfiguration>();
 
                 log.Info("Starting {0} version utility...", Assembly.GetExecutingAssembly().GetName().Version);
@@ -42,7 +43,7 @@ namespace Wikiled.YiScanner
                     !commands.TryGetValue(args[0], out var command))
                 {
                     log.Info("Starting as service");
-                    StartService(ftpConfiguration);
+                    StartService(directory, ftpConfiguration);
                     return;
                 }
                 
@@ -55,15 +56,15 @@ namespace Wikiled.YiScanner
             }
         }
 
-        private static void StartService(FtpConfiguration ftpConfiguration)
+        private static void StartService(string directory, FtpConfiguration ftpConfiguration)
         {
-            if (!File.Exists("service.json"))
+            if (!File.Exists(Path.Combine(directory, "service.json")))
             {
                 log.Error("Configuration file appsettings.json not found");
                 return;
             }
 
-            MonitoringConfig config = JsonConvert.DeserializeObject<MonitoringConfig>(File.ReadAllText("service.json"));
+            MonitoringConfig config = JsonConvert.DeserializeObject<MonitoringConfig>(File.ReadAllText(Path.Combine(directory, "service.json")));
             DestinationFactory factory = new DestinationFactory(ftpConfiguration, config, new NewFilesPredicate());
             HostFactory.Run(x =>
                 {
