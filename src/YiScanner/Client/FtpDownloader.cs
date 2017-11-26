@@ -13,13 +13,13 @@ namespace Wikiled.YiScanner.Client
 {
     public class FtpDownloader
     {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         private readonly CameraDescription camera;
 
         private readonly FtpConfiguration configuration;
 
         private readonly IDestination destination;
-
-        private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
         private readonly Regex maskRegex;
 
@@ -94,11 +94,6 @@ namespace Wikiled.YiScanner.Client
                     }
 
                     stream = null;
-                    if (configuration.DeleteOnTransfer)
-                    {
-                        log.Info("Delete - <{0}> {1}", item.FullName, camera.Name);
-                        await client.DeleteFileAsync(item.FullName).ConfigureAwait(false);
-                    }
                 }
                 else
                 {
@@ -121,10 +116,17 @@ namespace Wikiled.YiScanner.Client
             {
                 if (item.Type == FtpFileSystemObjectType.File)
                 {
-                    if (maskRegex.IsMatch(item.FullName)
-                        && predicate.CanDownload(lastScan, item.FullName, item.Modified))
+                    if (maskRegex.IsMatch(item.FullName) &&
+                        predicate.CanDownload(lastScan, item.FullName, item.Modified))
                     {
-                        await ProcessFile(client, item).ConfigureAwait(false);
+                        if (item.Modified < DateTime.Now.AddMinutes(1))
+                        {
+                            await ProcessFile(client, item).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            log.Debug("Ignoring file - too recent: <{0}>", item.FullName);
+                        }
                     }
                     else
                     {

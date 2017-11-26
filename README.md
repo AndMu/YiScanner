@@ -4,13 +4,13 @@
 ## Monitoring and downloading latest clips
 
 ```
-Wikiled.YiScanner Monitor -Cameras=1080i -Hosts=192.168.0.202 [-Compress] -Out=c:\out -Scan=10 [-Archive=2]
+Wikiled.YiScanner.exe Monitor -Cameras=1080i -Hosts=192.168.0.202 [-Compress] -Out=c:\out -Scan=10 [-Archive=2]
 ```
 
 ## Download once files, which haven't been downloaded yet
 
 ```
-Wikiled.YiScanner Download -Cameras=1080i -Hosts=192.168.0.202 [-Compress] -Out=c:\out [-Archive=2]
+Wikiled.YiScanner.exe Download -Cameras=1080i -Hosts=192.168.0.202 [-Compress] -Out=c:\out [-Archive=2]
 ```
 
 Options:

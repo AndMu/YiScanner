@@ -9,8 +9,5 @@
         public string Login { get; set; }
 
         public string FileMask { get; set; }
-
-        public bool DeleteOnTransfer { get; set; }
-
     }
 }
