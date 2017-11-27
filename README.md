@@ -1,4 +1,4 @@
-# Yi Camera FTP Scanner and Video Clips Downloaded
+# Yi Camera FTP Scanner and Video Clips Downloader
 
 Application supports two modes - arguments explictly specified in command promt and configuration based.
 It can also run as Windows service
