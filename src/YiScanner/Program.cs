@@ -74,8 +74,8 @@ namespace Wikiled.YiScanner
                             s.WhenStarted(tc => tc.Start());
                             s.WhenStopped(tc => tc.Stop());
                         });
-                    x.RunAsLocalSystem();
 
+                    x.RunAsLocalSystem();
                     x.SetDescription("Camera Monitoring Service");
                     x.SetDisplayName("YiScanner Service");
                     x.SetServiceName("YiScanner");
