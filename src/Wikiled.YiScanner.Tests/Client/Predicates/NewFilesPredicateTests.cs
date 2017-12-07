@@ -21,11 +21,8 @@ namespace Wikiled.YiScanner.Tests.Client.Predicates
             var result = instance.CanDownload(null, "Test.file", DateTime.Now);
             Assert.IsFalse(result);
             result = instance.CanDownload(DateTime.Now, "Test.file", DateTime.Now);
-            Assert.IsTrue(result);
-            result = instance.CanDownload(null, "Test.file", DateTime.Now);
             Assert.IsFalse(result);
-            instance.Downloaded("Test.file");
-            result = instance.CanDownload(DateTime.Now, "Test.file", DateTime.Now);
+            result = instance.CanDownload(null, "Test.file", DateTime.Now);
             Assert.IsFalse(result);
 
             result = instance.CanDownload(DateTime.Now,  "Test2.file", DateTime.Now);
