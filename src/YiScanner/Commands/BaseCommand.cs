@@ -31,6 +31,9 @@ namespace Wikiled.YiScanner.Commands
         [Description("Compress video files")]
         public bool Compress { get; set; }
 
+        [Description("Do you want to save it as image")]
+        public bool Images { get; }
+
         [Required]
         [Description("File destination")]
         public string Out { get; set; }

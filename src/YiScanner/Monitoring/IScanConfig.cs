@@ -8,6 +8,8 @@
 
         bool Compress { get; }
 
+        bool Images { get; }
+
         string Out { get; }
 
         int? Archive { get; }

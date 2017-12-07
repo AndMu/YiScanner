@@ -52,7 +52,7 @@ namespace Wikiled.YiScanner.Monitoring
             log.Info("Download from {0} camera(s)", listOfHosts.Length);
 
             var ftpDownloaders = new List<FtpDownloader>(listOfHosts.Length);
-            IDestination desitination = new FileDestination(config.Out);
+            IDestination desitination = config.Images ? (IDestination)new PictureFileDestination(config.Out) : new VideoFileDestination(config.Out);
             if (config.Compress)
             {
                 desitination = new CompressedDestination(desitination);

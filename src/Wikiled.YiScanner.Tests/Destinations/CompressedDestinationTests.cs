@@ -20,7 +20,7 @@ namespace Wikiled.YiScanner.Tests.Destinations
         public void Setup()
         {
             var outPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Data");
-            destination = new FileDestination(outPath);
+            destination = new VideoFileDestination(outPath);
             outFile = Path.Combine(outPath, "camera", "test.zip");
             instance = CreateCompressedDestination();
             

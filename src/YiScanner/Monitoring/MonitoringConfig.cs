@@ -10,6 +10,8 @@
 
         public bool Compress { get; set; }
 
+        public bool Images { get; set; }
+
         public string Out { get; set; }
 
         public int? Archive { get; set; }
