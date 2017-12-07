@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>NET462</TargetFramework>
+    <RuntimeIdentifier>win7-x86</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'NET462'">
@@ -42,6 +43,8 @@
 
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyName>Wikiled.YiScanner</AssemblyName>
+    <StartupObject>Wikiled.YiScanner.Program</StartupObject>
   </PropertyGroup>
 
 </Project>
