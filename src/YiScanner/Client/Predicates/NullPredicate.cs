@@ -8,5 +8,9 @@ namespace Wikiled.YiScanner.Client.Predicates
         {
             return true;
         }
+
+        public void Downloaded(string file)
+        {
+        }
     }
 }

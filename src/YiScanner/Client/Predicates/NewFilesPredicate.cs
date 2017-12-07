@@ -14,8 +14,12 @@ namespace Wikiled.YiScanner.Client.Predicates
                 return false;
             }
 
-            table[file] = true;
             return lastScan != null;
+        }
+
+        public void Downloaded(string file)
+        {
+            table[file] = true;
         }
     }
 }

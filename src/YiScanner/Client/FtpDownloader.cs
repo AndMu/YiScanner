@@ -100,7 +100,7 @@ namespace Wikiled.YiScanner.Client
                     log.Info("File is already downloaded - <{0}> {1}", item.FullName, camera.Name);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.Error(ex);
             }
@@ -122,6 +122,7 @@ namespace Wikiled.YiScanner.Client
                         if (item.Modified < DateTime.Now.AddMinutes(1))
                         {
                             await ProcessFile(client, item).ConfigureAwait(false);
+                            predicate.Downloaded(item.FullName);
                         }
                         else
                         {

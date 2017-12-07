@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
@@ -22,15 +21,14 @@ namespace Wikiled.YiScanner.Destinations
         public bool IsDownloaded(VideoHeader header)
         {
             Guard.NotNull(() => header, header);
-            var fileDestination = header.GetPath(destination);
-            return File.Exists(fileDestination);
+            return File.Exists(GetFileName(header));
         }
 
         public async Task Transfer(VideoHeader header, Stream source)
         {
             Guard.NotNull(() => header, header);
             Guard.NotNull(() => source, source);
-            var fileDestination = header.GetPath(destination);
+            
             var temp = Path.GetTempFileName();
             using (StreamWriter write = new StreamWriter(temp))
             {
@@ -42,10 +40,9 @@ namespace Wikiled.YiScanner.Destinations
                 using (VideoFileReader reader = new VideoFileReader())
                 {
                     reader.Open(temp);
-                    fileDestination = Path.ChangeExtension(fileDestination, "png");
                     using (Bitmap videoFrame = reader.ReadVideoFrame())
                     {
-                        videoFrame.Save(fileDestination, ImageFormat.Png);
+                        videoFrame.Save(GetFileName(header), ImageFormat.Png);
                     }
                 }
             }
@@ -53,6 +50,12 @@ namespace Wikiled.YiScanner.Destinations
             {
                 File.Delete(temp);
             }
+        }
+
+        private string GetFileName(VideoHeader header)
+        {
+            var fileDestination = header.GetPath(destination);
+            return Path.ChangeExtension(fileDestination, "png");
         }
     }
 }
