@@ -4,6 +4,8 @@
     {
         public int Scan { get; set; }
 
+        public bool All { get; set; }
+
         public string Cameras { get; set; }
 
         public string Hosts { get; set; }

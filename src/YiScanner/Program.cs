@@ -65,7 +65,8 @@ namespace Wikiled.YiScanner
             }
 
             MonitoringConfig config = JsonConvert.DeserializeObject<MonitoringConfig>(File.ReadAllText(Path.Combine(directory, "service.json")));
-            DestinationFactory factory = new DestinationFactory(ftpConfiguration, config, new NewFilesPredicate());
+            var predicate = config.All ? new NullPredicate() : (IPredicate)new NewFilesPredicate();
+            DestinationFactory factory = new DestinationFactory(ftpConfiguration, config, predicate);
             HostFactory.Run(x =>
                 {
                     x.Service<MonitoringInstance>(s =>
