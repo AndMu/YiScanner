@@ -18,6 +18,7 @@ namespace Wikiled.YiScanner.Client.Archive
         {
             if (!Directory.Exists(destination))
             {
+                log.Warn("Output doesn't exist: {0}", destination);
                 return;
             }
 
@@ -34,6 +35,10 @@ namespace Wikiled.YiScanner.Client.Archive
                             {
                                 log.Debug("Deleting: {0}", file);
                                 File.Delete(file);
+                            }
+                            else
+                            {
+                                log.Debug("Keeping: {0}", file);
                             }
                         }
                         catch(Exception ex)
