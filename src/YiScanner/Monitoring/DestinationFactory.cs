@@ -27,7 +27,7 @@ namespace Wikiled.YiScanner.Monitoring
             this.filePredicate = filePredicate;
         }
 
-        public FtpDownloader[] GetDestinations()
+        public IFtpDownloader[] GetDestinations()
         {
             if (string.IsNullOrEmpty(config.Cameras))
             {

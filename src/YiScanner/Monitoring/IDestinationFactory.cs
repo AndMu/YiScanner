@@ -4,6 +4,6 @@ namespace Wikiled.YiScanner.Monitoring
 {
     public interface IDestinationFactory
     {
-        FtpDownloader[] GetDestinations();
+        IFtpDownloader[] GetDestinations();
     }
 }

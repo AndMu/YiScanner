@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -9,6 +10,7 @@ using NLog;
 using Topshelf;
 using Wikiled.Core.Utility.Arguments;
 using Wikiled.YiScanner.Client;
+using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Commands;
 using Wikiled.YiScanner.Monitoring;
@@ -71,7 +73,7 @@ namespace Wikiled.YiScanner
                 {
                     x.Service<MonitoringInstance>(s =>
                         {
-                            s.ConstructUsing(name => new MonitoringInstance(config, factory));
+                            s.ConstructUsing(name => new MonitoringInstance(TaskPoolScheduler.Default, config, factory, new DeleteArchiving()));
                             s.WhenStarted(tc => tc.Start());
                             s.WhenStopped(tc => tc.Stop());
                         });
