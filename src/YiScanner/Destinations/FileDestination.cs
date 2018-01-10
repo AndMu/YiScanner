@@ -5,11 +5,11 @@ using Wikiled.YiScanner.Client;
 
 namespace Wikiled.YiScanner.Destinations
 {
-    public class VideoFileDestination : IDestination
+    public class FileDestination : IDestination
     {
         private readonly string destination;
 
-        public VideoFileDestination(string destination)
+        public FileDestination(string destination)
         {
             Guard.NotNullOrEmpty(() => destination, destination);
             this.destination = destination;
@@ -22,11 +22,17 @@ namespace Wikiled.YiScanner.Destinations
             return File.Exists(fileDestination);
         }
 
+        public string ResolveName(VideoHeader header)
+        {
+            Guard.NotNull(() => header, header);
+            return header.GetPath(destination);
+        }
+
         public async Task Transfer(VideoHeader header, Stream source)
         {
             Guard.NotNull(() => header, header);
             Guard.NotNull(() => source, source);
-            var fileDestination = header.GetPath(destination);
+            var fileDestination = ResolveName(header);
             using (StreamWriter write = new StreamWriter(fileDestination))
             {
                 await source.CopyToAsync(write.BaseStream).ConfigureAwait(false);

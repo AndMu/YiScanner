@@ -1,4 +1,6 @@
-﻿namespace Wikiled.YiScanner.Monitoring
+﻿using Wikiled.YiScanner.Actions;
+
+namespace Wikiled.YiScanner.Monitoring
 {
     public class MonitoringConfig : IMonitoringConfig
     {
@@ -17,5 +19,7 @@
         public string Out { get; set; }
 
         public int? Archive { get; set; }
+
+        public ActionConfig Action { get; set; }
     }
 }

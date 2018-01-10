@@ -15,13 +15,14 @@ namespace Wikiled.YiScanner.Monitoring
 
         public void StartService(string directory, FtpConfiguration ftpConfiguration)
         {
-            if (!File.Exists(Path.Combine(directory, "service.json")))
+            var serviceName = Path.Combine(directory, "service.json");
+            if (!File.Exists(serviceName))
             {
-                log.Error("Configuration file appsettings.json not found");
+                log.Error($"Configuration file {serviceName} not found");
                 return;
             }
 
-            MonitoringConfig config = JsonConvert.DeserializeObject<MonitoringConfig>(File.ReadAllText(Path.Combine(directory, "service.json")));
+            MonitoringConfig config = JsonConvert.DeserializeObject<MonitoringConfig>(File.ReadAllText(serviceName));
             var predicate = config.All ? new NullPredicate() : (IPredicate)new NewFilesPredicate();
             DestinationFactory factory = new DestinationFactory(ftpConfiguration, config, predicate);
             HostFactory.Run(

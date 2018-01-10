@@ -22,6 +22,11 @@ namespace Wikiled.YiScanner.Destinations
             return another.IsDownloaded(ConstructHeader(header));
         }
 
+        public string ResolveName(VideoHeader header)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public async Task Transfer(VideoHeader header, Stream source)
         {
             Guard.NotNull(() => header, header);
