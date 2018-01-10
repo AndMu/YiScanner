@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
-using Topshelf;
 using Wikiled.Core.Utility.Arguments;
 using Wikiled.YiScanner.Client;
-using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Commands;
 using Wikiled.YiScanner.Monitoring;
 
@@ -43,7 +40,8 @@ namespace Wikiled.YiScanner
                     !commands.TryGetValue(args[0], out var command))
                 {
                     log.Info("Starting as service");
-                    StartService(directory, ftpConfiguration);
+                    ServiceStarter serviceStarter = new ServiceStarter();
+                    serviceStarter.StartService(directory, ftpConfiguration);
                     return;
                 }
                 
@@ -56,31 +54,6 @@ namespace Wikiled.YiScanner
             }
         }
 
-        private static void StartService(string directory, FtpConfiguration ftpConfiguration)
-        {
-            if (!File.Exists(Path.Combine(directory, "service.json")))
-            {
-                log.Error("Configuration file appsettings.json not found");
-                return;
-            }
-
-            MonitoringConfig config = JsonConvert.DeserializeObject<MonitoringConfig>(File.ReadAllText(Path.Combine(directory, "service.json")));
-            var predicate = config.All ? new NullPredicate() : (IPredicate)new NewFilesPredicate();
-            DestinationFactory factory = new DestinationFactory(ftpConfiguration, config, predicate);
-            HostFactory.Run(x =>
-                {
-                    x.Service<MonitoringInstance>(s =>
-                        {
-                            s.ConstructUsing(name => new MonitoringInstance(config, factory));
-                            s.WhenStarted(tc => tc.Start());
-                            s.WhenStopped(tc => tc.Stop());
-                        });
-
-                    x.RunAsLocalSystem();
-                    x.SetDescription("Camera Monitoring Service");
-                    x.SetDisplayName("YiScanner Service");
-                    x.SetServiceName("YiScanner");
-                });
-        }
+       
     }
 }

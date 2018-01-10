@@ -38,7 +38,7 @@ namespace Wikiled.YiScanner.Monitoring
             
             if (configuration.Archive.HasValue)
             {
-                var archiving = Observable.Interval(TimeSpan.FromDays(1), TaskPoolScheduler.Default)
+                var archiving = Observable.Interval(TimeSpan.FromSeconds(1), TaskPoolScheduler.Default)
                                           .Select(item => Archiving())
                                           .Replay();
                 connections.Add(archiving.Connect());
@@ -65,7 +65,7 @@ namespace Wikiled.YiScanner.Monitoring
         private bool Archiving()
         {
             var archiving = new DeleteArchiving();
-            log.Info("Archiving...");
+            log.Info("");
             archiving.Archive(configuration.Out, TimeSpan.FromDays(configuration.Archive.Value));
             log.Info("Archiving. Done!");
             return true;
