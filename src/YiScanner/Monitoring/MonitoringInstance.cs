@@ -17,15 +17,23 @@ namespace Wikiled.YiScanner.Monitoring
 
         private readonly IMonitoringConfig configuration;
 
-        private readonly FtpDownloader[] downloaders;
+        private readonly IFtpDownloader[] downloaders;
+
+        private readonly IDeleteArchiving archiving;
 
         private readonly List<IDisposable> connections = new List<IDisposable>();
 
-        public MonitoringInstance(IMonitoringConfig configuration, IDestinationFactory downloaderFactory)
+        private readonly IScheduler scheduler;
+
+        public MonitoringInstance(IScheduler scheduler, IMonitoringConfig configuration, IDestinationFactory downloaderFactory, IDeleteArchiving archiving)
         {
             Guard.NotNull(() => configuration, configuration);
+            Guard.NotNull(() => scheduler, scheduler);
             Guard.NotNull(() => downloaderFactory, downloaderFactory);
+            Guard.NotNull(() => archiving, archiving);
             this.configuration = configuration;
+            this.archiving = archiving;
+            this.scheduler = scheduler;
             downloaders = downloaderFactory.GetDestinations();
         }
 
@@ -35,20 +43,26 @@ namespace Wikiled.YiScanner.Monitoring
             {
                 return false;
             }
-            
+
             if (configuration.Archive.HasValue)
             {
-                var archiving = Observable.Interval(TimeSpan.FromSeconds(1), TaskPoolScheduler.Default)
-                                          .Select(item => Archiving())
-                                          .Replay();
-                connections.Add(archiving.Connect());
+                var archivingObservable = Observable.Empty<bool>()
+                                          .Delay(TimeSpan.FromDays(1), scheduler)
+                                          .Concat(Observable.FromAsync(Archiving, scheduler))
+                                          .Repeat()
+                                          .SubscribeOn(scheduler)
+                                          .Subscribe();
+                connections.Add(archivingObservable);
             }
 
-            var observable = Observable.Interval(TimeSpan.FromSeconds(configuration.Scan), TaskPoolScheduler.Default)
-                                       .Select(item => Download())
-                                       .Replay();
-            connections.Add(observable.Connect());
+            var observableMonitor = Observable.Empty<bool>()
+                                    .Delay(TimeSpan.FromSeconds(configuration.Scan), scheduler)
+                                    .Concat(Observable.FromAsync(Download, scheduler))
+                                    .Repeat()
+                                    .SubscribeOn(scheduler)
+                                    .Subscribe();
 
+            connections.Add(observableMonitor);
             return true;
         }
 
@@ -62,29 +76,31 @@ namespace Wikiled.YiScanner.Monitoring
             connections.Clear();
         }
 
-        private bool Archiving()
+        private async Task<bool> Archiving()
         {
             var archiving = new DeleteArchiving();
-            log.Info("");
+            log.Info("Archiving...");
             archiving.Archive(configuration.Out, TimeSpan.FromDays(configuration.Archive.Value));
             log.Info("Archiving. Done!");
             return true;
         }
 
-        private async Task Download()
+        private async Task<bool> Download()
         {
             log.Info("Checking Ftp....");
             try
             {
                 var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download());
                 await Task.WhenAll(tasks).ConfigureAwait(false);
+                log.Info("Done!");
+                return true;
             }
             catch (Exception ex)
             {
                 log.Error(ex);
             }
 
-            log.Info("Done!");
+            return false;
         }
     }
 }

@@ -5,14 +5,20 @@ using NLog;
 
 namespace Wikiled.YiScanner.Client.Archive
 {
-    public class DeleteArchiving
+    public class DeleteArchiving : IDeleteArchiving
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        public void Archive(string destination, TimeSpan time)
+        public Task Archive(string destination, TimeSpan time)
+        {
+            return Task.Run(() => ArchiveInternal(destination, time));
+        }
+
+        private void ArchiveInternal(string destination, TimeSpan time)
         {
             if (!Directory.Exists(destination))
             {
+                log.Warn("Output doesn't exist: {0}", destination);
                 return;
             }
 
@@ -30,8 +36,12 @@ namespace Wikiled.YiScanner.Client.Archive
                                 log.Debug("Deleting: {0}", file);
                                 File.Delete(file);
                             }
+                            else
+                            {
+                                log.Debug("Keeping: {0}", file);
+                            }
                         }
-                        catch (Exception ex)
+                        catch(Exception ex)
                         {
                             log.Error(ex);
                         }

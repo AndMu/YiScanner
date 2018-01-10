@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Reactive.Concurrency;
 using NLog;
 using Wikiled.YiScanner.Client;
+using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Monitoring;
 
@@ -32,7 +34,7 @@ namespace Wikiled.YiScanner.Commands
 
         protected override void ProcessFtp(IDestinationFactory downloaders)
         {
-            var instance = new MonitoringInstance(this, downloaders);
+            var instance = new MonitoringInstance(TaskPoolScheduler.Default, this, downloaders, new DeleteArchiving());
             if (instance.Start())
             {
                 log.Info("Press enter to stop monitoring...");

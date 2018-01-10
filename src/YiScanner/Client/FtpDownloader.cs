@@ -11,7 +11,7 @@ using Wikiled.YiScanner.Destinations;
 
 namespace Wikiled.YiScanner.Client
 {
-    public class FtpDownloader
+    public class FtpDownloader : IFtpDownloader
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
