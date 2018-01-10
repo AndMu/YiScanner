@@ -46,19 +46,21 @@ namespace Wikiled.YiScanner.Monitoring
 
             if (configuration.Archive.HasValue)
             {
-                var archivingObservable = Observable
-                    .FromAsync(Archiving, scheduler)
-                    .Delay(TimeSpan.FromDays(1), scheduler)
-                    .Repeat()
-                    .Subscribe();
+                var archivingObservable = Observable.Empty<bool>()
+                                          .Delay(TimeSpan.FromDays(1), scheduler)
+                                          .Concat(Observable.FromAsync(Archiving, scheduler))
+                                          .Repeat()
+                                          .SubscribeOn(scheduler)
+                                          .Subscribe();
                 connections.Add(archivingObservable);
             }
 
-            var observableMonitor = Observable
-                .FromAsync(Download, scheduler)
-                .Delay(TimeSpan.FromSeconds(configuration.Scan), scheduler)
-                .Repeat()
-                .Subscribe();
+            var observableMonitor = Observable.Empty<bool>()
+                                    .Delay(TimeSpan.FromSeconds(configuration.Scan), scheduler)
+                                    .Concat(Observable.FromAsync(Download, scheduler))
+                                    .Repeat()
+                                    .SubscribeOn(scheduler)
+                                    .Subscribe();
 
             connections.Add(observableMonitor);
             return true;

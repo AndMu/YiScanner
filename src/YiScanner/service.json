@@ -4,6 +4,6 @@
   "Hosts": "192.168.0.103",
   "Compress": false,
   "Archive": 2,
-  "Images": true,
+  "Images": false,
   "Out": "D:/Cloud/GoogleUni/Camera/Monitor"
 }
