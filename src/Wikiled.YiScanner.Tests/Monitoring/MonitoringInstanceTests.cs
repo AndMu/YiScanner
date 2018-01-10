@@ -43,7 +43,7 @@ namespace Wikiled.YiScanner.Tests.Monitoring
         public void Download()
         {
             instance.Start();
-            scheduler.AdvanceBy(TimeSpan.FromSeconds(10).Ticks);
+            scheduler.AdvanceBy(TimeSpan.FromSeconds(11).Ticks);
             ftpDownloader.Verify(item => item.Download(), Times.Exactly(10));
         }
 
@@ -60,9 +60,10 @@ namespace Wikiled.YiScanner.Tests.Monitoring
         public void Archive()
         {
             monitoringConfig.Archive = 2;
+            monitoringConfig.Scan = int.MaxValue;
             archiving.Setup(item => item.Archive(It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(() => Observable.Return(true).Delay(TimeSpan.FromSeconds(5), scheduler).ToTask());
             instance.Start();
-            scheduler.AdvanceBy(TimeSpan.FromDays(2).Ticks);
+            scheduler.AdvanceBy(TimeSpan.FromDays(3).Ticks);
             archiving.Verify(item => item.Archive(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Exactly(2));
         }
 

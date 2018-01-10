@@ -78,9 +78,8 @@ namespace Wikiled.YiScanner.Monitoring
 
         private async Task<bool> Archiving()
         {
-            var archiving = new DeleteArchiving();
             log.Info("Archiving...");
-            archiving.Archive(configuration.Out, TimeSpan.FromDays(configuration.Archive.Value));
+            await archiving.Archive(configuration.Out, TimeSpan.FromDays(configuration.Archive.Value)).ConfigureAwait(false);
             log.Info("Archiving. Done!");
             return true;
         }
