@@ -13,16 +13,16 @@ namespace Wikiled.YiScanner.Monitoring
 
         private readonly IScanConfig config;
 
-        private readonly FtpConfiguration ftpConfiguration;
+        private readonly FtpConfig ftpConfig;
 
         private readonly IPredicate filePredicate;
 
-        public DestinationFactory(FtpConfiguration ftpConfiguration, IScanConfig config, IPredicate filePredicate)
+        public DestinationFactory(FtpConfig ftpConfig, IScanConfig config, IPredicate filePredicate)
         {
-            Guard.NotNull(() => ftpConfiguration, ftpConfiguration);
+            Guard.NotNull(() => ftpConfig, ftpConfig);
             Guard.NotNull(() => config, config);
             Guard.NotNull(() => filePredicate, filePredicate);
-            this.ftpConfiguration = ftpConfiguration;
+            this.ftpConfig = ftpConfig;
             this.config = config;
             this.filePredicate = filePredicate;
         }
@@ -55,14 +55,14 @@ namespace Wikiled.YiScanner.Monitoring
             IDestination desitination = config.Images ? (IDestination)new PictureFileDestination(config.Out) : new FileDestination(config.Out);
             if (config.Compress)
             {
-                desitination = new CompressedDestination(desitination);
+                desitination = ChainedPriorActionDestination.CreateCompressed(desitination);
             }
 
             for (int i = 0; i < listOfCameras.Length; i++)
             {
                 ftpDownloaders.Add(
                     new FtpDownloader(
-                        ftpConfiguration,
+                        ftpConfig,
                         new CameraDescription(listOfCameras[i], listOfHosts[i]),
                         desitination,
                         filePredicate));

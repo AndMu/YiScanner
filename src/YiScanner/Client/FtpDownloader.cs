@@ -17,7 +17,7 @@ namespace Wikiled.YiScanner.Client
 
         private readonly CameraDescription camera;
 
-        private readonly FtpConfiguration configuration;
+        private readonly FtpConfig config;
 
         private readonly IDestination destination;
 
@@ -28,20 +28,20 @@ namespace Wikiled.YiScanner.Client
         private DateTime? lastScan;
 
         public FtpDownloader(
-            FtpConfiguration configuration,
+            FtpConfig config,
             CameraDescription camera,
             IDestination destination,
             IPredicate predicate)
         {
-            Guard.NotNull(() => configuration, configuration);
+            Guard.NotNull(() => config, config);
             Guard.NotNull(() => camera, camera);
             Guard.NotNull(() => destination, destination);
             Guard.NotNull(() => predicate, predicate);
-            maskRegex = FileMask.GenerateFitMask(configuration.FileMask);
+            maskRegex = FileMask.GenerateFitMask(config.FileMask);
             this.camera = camera;
             this.destination = destination;
             this.predicate = predicate;
-            this.configuration = configuration;
+            this.config = config;
         }
 
         public async Task Download()
@@ -51,11 +51,11 @@ namespace Wikiled.YiScanner.Client
             {
                 log.Info("Connecting: {0}", camera.Address);
                 client.Credentials = new NetworkCredential(
-                    configuration.Login,
-                    configuration.Password);
+                    config.Login,
+                    config.Password);
                 client.Connect();
                 log.Info("Connected: {0}!", camera.Address);
-                await Retrieve(client, configuration.Path).ConfigureAwait(false);
+                await Retrieve(client, config.Path).ConfigureAwait(false);
             }
 
             lastScan = DateTime.Now;
@@ -92,8 +92,6 @@ namespace Wikiled.YiScanner.Client
                             reply.Code,
                             camera.Name);
                     }
-
-                    stream = null;
                 }
                 else
                 {

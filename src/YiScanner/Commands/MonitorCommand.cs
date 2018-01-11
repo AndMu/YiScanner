@@ -18,8 +18,8 @@ namespace Wikiled.YiScanner.Commands
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        public MonitorCommand(FtpConfiguration ftpConfiguration)
-            : base(ftpConfiguration)
+        public MonitorCommand(FtpConfig ftpConfig)
+            : base(ftpConfig)
         {
         }
 

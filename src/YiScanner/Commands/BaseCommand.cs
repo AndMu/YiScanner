@@ -12,12 +12,12 @@ namespace Wikiled.YiScanner.Commands
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        private readonly FtpConfiguration ftpConfiguration;
+        private readonly FtpConfig ftpConfig;
 
-        protected BaseCommand(FtpConfiguration ftpConfiguration)
+        protected BaseCommand(FtpConfig ftpConfig)
         {
-            Guard.NotNull(() => ftpConfiguration, ftpConfiguration);
-            this.ftpConfiguration = ftpConfiguration;
+            Guard.NotNull(() => ftpConfig, ftpConfig);
+            this.ftpConfig = ftpConfig;
         }
 
         [Required]
@@ -44,7 +44,7 @@ namespace Wikiled.YiScanner.Commands
         public override void Execute()
         {
             log.Info("Starting camera download...");
-            DestinationFactory factory = new DestinationFactory(ftpConfiguration, this, ConstructPredicate());
+            DestinationFactory factory = new DestinationFactory(ftpConfig, this, ConstructPredicate());
             ProcessFtp(factory);
         }
 

@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using Wikiled.YiScanner.Client;
@@ -12,7 +11,7 @@ namespace Wikiled.YiScanner.Tests.Destinations
     {
         private IDestination destination;
 
-        private CompressedDestination instance;
+        private IDestination instance;
 
         private string outFile;
 
@@ -22,23 +21,11 @@ namespace Wikiled.YiScanner.Tests.Destinations
             var outPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Data");
             destination = new FileDestination(outPath);
             outFile = Path.Combine(outPath, "camera", "test.zip");
-            instance = CreateCompressedDestination();
-            
-        }
-
-        [TearDown]
-        public void Cleanup()
-        {
+            instance = ChainedPriorActionDestination.CreateCompressed(destination);
             if (File.Exists(outFile))
             {
                 File.Delete(outFile);
             }
-        }
-
-        [Test]
-        public void Construct()
-        {
-            Assert.Throws<ArgumentNullException>(() => new CompressedDestination(null));
         }
 
         [Test]
@@ -52,11 +39,6 @@ namespace Wikiled.YiScanner.Tests.Destinations
             }
 
             Assert.IsTrue(File.Exists(outFile));
-        }
-
-        private CompressedDestination CreateCompressedDestination()
-        {
-            return new CompressedDestination(destination);
         }
     }
 }

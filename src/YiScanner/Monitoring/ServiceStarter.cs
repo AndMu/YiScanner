@@ -13,7 +13,7 @@ namespace Wikiled.YiScanner.Monitoring
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        public void StartService(string directory, FtpConfiguration ftpConfiguration)
+        public void StartService(string directory, FtpConfig ftpConfig)
         {
             var serviceName = Path.Combine(directory, "service.json");
             if (!File.Exists(serviceName))
@@ -24,7 +24,7 @@ namespace Wikiled.YiScanner.Monitoring
 
             MonitoringConfig config = JsonConvert.DeserializeObject<MonitoringConfig>(File.ReadAllText(serviceName));
             var predicate = config.All ? new NullPredicate() : (IPredicate)new NewFilesPredicate();
-            DestinationFactory factory = new DestinationFactory(ftpConfiguration, config, predicate);
+            DestinationFactory factory = new DestinationFactory(ftpConfig, config, predicate);
             HostFactory.Run(
                 x =>
                 {

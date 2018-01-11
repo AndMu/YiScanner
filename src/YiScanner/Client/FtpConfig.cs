@@ -1,6 +1,6 @@
 ﻿namespace Wikiled.YiScanner.Client
 {
-    public class FtpConfiguration
+    public class FtpConfig
     {
         public string Path { get; set; }
 
