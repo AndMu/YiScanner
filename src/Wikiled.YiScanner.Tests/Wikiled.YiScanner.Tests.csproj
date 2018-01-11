@@ -16,6 +16,7 @@
     <PackageReference Include="FluentFTP" Version="19.1.2" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="3.1.1" />
     <PackageReference Include="Moq" Version="4.8.1" />
+    <PackageReference Include="NETStandard.Library" Version="2.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />
