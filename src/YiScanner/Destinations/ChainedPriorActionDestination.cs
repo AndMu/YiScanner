@@ -5,13 +5,14 @@ using Wikiled.YiScanner.Client;
 
 namespace Wikiled.YiScanner.Destinations
 {
-    public class ChainedPriorActionDestination : IDestination
+    public class ChainedPriorActionDestination : ChainedPriorActionDestinationBase
     {
-        private readonly IDestination next;
-
         private readonly IPriorAction priorAction;
 
+        private readonly IDestination next;
+
         public ChainedPriorActionDestination(IDestination next, IPriorAction priorAction)
+        : base(next)
         {
             Guard.NotNull(() => next, next);
             Guard.NotNull(() => priorAction, priorAction);
@@ -21,12 +22,10 @@ namespace Wikiled.YiScanner.Destinations
 
         public static IDestination CreateCompressed(IDestination next)
         {
-            return TransformedDestination.ChangeExtension(
-                new ChainedPriorActionDestination(next, new CompressPriorAction()),
-                "zip");
+            return TransformedDestination.ChangeExtension(new ChainedPriorActionDestination(next, new CompressPriorAction()), "zip");
         }
 
-        public async Task Transfer(VideoHeader header, Stream source)
+        public override async Task Transfer(VideoHeader header, Stream source)
         {
             Guard.NotNull(() => header, header);
             Guard.NotNull(() => source, source);
@@ -35,18 +34,6 @@ namespace Wikiled.YiScanner.Destinations
             {
                 await next.Transfer(result.header, result.source);
             }
-        }
-
-        public bool IsDownloaded(VideoHeader header)
-        {
-            Guard.NotNull(() => header, header);
-            return next.IsDownloaded(header);
-        }
-
-        public string ResolveName(VideoHeader header)
-        {
-            Guard.NotNull(() => header, header);
-            return next.ResolveName(header);
         }
     }
 }
