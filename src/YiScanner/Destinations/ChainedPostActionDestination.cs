@@ -38,8 +38,8 @@ namespace Wikiled.YiScanner.Destinations
             Guard.NotNull(() => source, source);
             var transfer = next.Transfer(header, source);
             var name = next.ResolveName(header);
-            await transfer;
-            await postAction.AfterTransfer(name);
+            await transfer.ConfigureAwait(false);
+            await postAction.AfterTransfer(name).ConfigureAwait(false);
         }
     }
 }

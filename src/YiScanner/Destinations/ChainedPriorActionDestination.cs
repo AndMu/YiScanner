@@ -29,10 +29,10 @@ namespace Wikiled.YiScanner.Destinations
         {
             Guard.NotNull(() => header, header);
             Guard.NotNull(() => source, source);
-            var result = await priorAction.BeforeTransfer(header, source);
+            var result = await priorAction.BeforeTransfer(header, source).ConfigureAwait(false);
             using (result.source)
             {
-                await next.Transfer(result.header, result.source);
+                await next.Transfer(result.header, result.source).ConfigureAwait(false);
             }
         }
     }

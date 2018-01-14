@@ -1,7 +1,7 @@
 ﻿{
   "Scan": 30,
   "Cameras": "1080i",
-  "Hosts": "192.168.0.103",
+  "Hosts": "192.168.0.105",
   "Compress": false,
   "Archive": 2,
   "Images": true,

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using NLog;
@@ -34,11 +35,13 @@ namespace Wikiled.YiScanner.Destinations
             startInfo.Arguments = blocks.Skip(1).AccumulateItems(" ");
             startInfo.CreateNoWindow = true;
             startInfo.ErrorDialog = false;
+            startInfo.UseShellExecute = true;
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            
+
             var process = new Process();
             process.StartInfo = startInfo;
-            return Task.FromResult(process.Start());
+            var result = process.Start();
+            return Task.FromResult(result);
         }
     }
 }

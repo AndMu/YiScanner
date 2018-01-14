@@ -21,19 +21,20 @@ namespace Wikiled.YiScanner.Destinations
         public bool IsDownloaded(VideoHeader header)
         {
             Guard.NotNull(() => header, header);
-            return File.Exists(GetFileName(header));
+            return File.Exists(ResolveName(header));
         }
 
         public string ResolveName(VideoHeader header)
         {
-            throw new System.NotImplementedException();
+            var fileDestination = header.GetPath(destination);
+            return Path.ChangeExtension(fileDestination, "png");
         }
 
         public async Task Transfer(VideoHeader header, Stream source)
         {
             Guard.NotNull(() => header, header);
             Guard.NotNull(() => source, source);
-            
+
             var temp = Path.GetTempFileName();
             using (StreamWriter write = new StreamWriter(temp))
             {
@@ -47,7 +48,7 @@ namespace Wikiled.YiScanner.Destinations
                     reader.Open(temp);
                     using (Bitmap videoFrame = reader.ReadVideoFrame())
                     {
-                        videoFrame.Save(GetFileName(header), ImageFormat.Png);
+                        videoFrame.Save(ResolveName(header), ImageFormat.Png);
                     }
                 }
             }
@@ -55,12 +56,6 @@ namespace Wikiled.YiScanner.Destinations
             {
                 File.Delete(temp);
             }
-        }
-
-        private string GetFileName(VideoHeader header)
-        {
-            var fileDestination = header.GetPath(destination);
-            return Path.ChangeExtension(fileDestination, "png");
         }
     }
 }
