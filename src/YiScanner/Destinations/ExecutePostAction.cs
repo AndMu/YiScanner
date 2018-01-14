@@ -30,6 +30,7 @@ namespace Wikiled.YiScanner.Destinations
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
             var path = config.Cmd.Replace("%1", fileName);
+            log.Debug("Executing: {0}", fileName);
             var blocks = path.Split(' ');
             startInfo.FileName = blocks[0];
             startInfo.Arguments = blocks.Skip(1).AccumulateItems(" ");
