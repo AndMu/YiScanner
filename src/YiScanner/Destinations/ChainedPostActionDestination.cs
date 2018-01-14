@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using Wikiled.Core.Utility.Arguments;
-using Wikiled.YiScanner.Actions;
 using Wikiled.YiScanner.Client;
 
 namespace Wikiled.YiScanner.Destinations

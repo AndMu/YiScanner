@@ -1,9 +1,10 @@
-﻿using NLog;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using NLog;
 using Wikiled.Core.Utility.Arguments;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Predicates;
+using Wikiled.YiScanner.Destinations;
 using Wikiled.YiScanner.Monitoring;
 
 namespace Wikiled.YiScanner.Commands
@@ -19,6 +20,8 @@ namespace Wikiled.YiScanner.Commands
             Guard.NotNull(() => ftpConfig, ftpConfig);
             this.ftpConfig = ftpConfig;
         }
+
+        public ActionConfig Action { get; }
 
         [Required]
         [Description("List of camera names")]
