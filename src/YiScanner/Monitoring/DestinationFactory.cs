@@ -52,10 +52,15 @@ namespace Wikiled.YiScanner.Monitoring
             log.Info("Download from {0} camera(s)", listOfHosts.Length);
 
             var ftpDownloaders = new List<FtpDownloader>(listOfHosts.Length);
-            IDestination desitination = config.Images ? (IDestination)new PictureFileDestination(config.Out) : new FileDestination(config.Out);
+            IDestination destination = config.Images ? (IDestination)new PictureFileDestination(config.Out) : new FileDestination(config.Out);
             if (config.Compress)
             {
-                desitination = ChainedPriorActionDestination.CreateCompressed(desitination);
+                destination = ChainedPriorActionDestination.CreateCompressed(destination);
+            }
+
+            if (config.Action != null)
+            {
+                destination = ChainedPostActionDestination.CreateAction(destination, config.Action);
             }
 
             for (int i = 0; i < listOfCameras.Length; i++)
@@ -64,7 +69,7 @@ namespace Wikiled.YiScanner.Monitoring
                     new FtpDownloader(
                         ftpConfig,
                         new CameraDescription(listOfCameras[i], listOfHosts[i]),
-                        desitination,
+                        destination,
                         filePredicate));
             }
 

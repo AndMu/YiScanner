@@ -1,4 +1,6 @@
-﻿namespace Wikiled.YiScanner.Monitoring
+﻿using Wikiled.YiScanner.Destinations;
+
+namespace Wikiled.YiScanner.Monitoring
 {
     public interface IScanConfig
     {
@@ -13,5 +15,6 @@
         string Out { get; }
 
         int? Archive { get; }
-    }
+
+        ActionConfig Action { get; }
 }

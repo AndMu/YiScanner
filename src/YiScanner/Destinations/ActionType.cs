@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Wikiled.YiScanner.Actions
+namespace Wikiled.YiScanner.Destinations
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum ActionType

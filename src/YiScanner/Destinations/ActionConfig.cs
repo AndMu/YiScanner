@@ -1,4 +1,4 @@
-﻿namespace Wikiled.YiScanner.Actions
+﻿namespace Wikiled.YiScanner.Destinations
 {
     public class ActionConfig
     {

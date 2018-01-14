@@ -1,4 +1,5 @@
 ﻿using Wikiled.YiScanner.Actions;
+using Wikiled.YiScanner.Destinations;
 
 namespace Wikiled.YiScanner.Monitoring
 {

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using NLog;
 using Wikiled.Core.Utility.Arguments;
 using Wikiled.Core.Utility.Extensions;
-using Wikiled.YiScanner.Actions;
 
 namespace Wikiled.YiScanner.Destinations
 {
