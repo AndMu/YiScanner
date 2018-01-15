@@ -1,10 +1,10 @@
-# Yi Camera FTP Scanner and Video Clips Downloader
+# Yi Camera FTP Scanner and Video Clips/Images Downloader
 
-Application supports two modes - arguments explictly specified in command promt and configuration based.
-It can also run as Windows service
+The application supports two modes - arguments explicitly specified in command prompt and configuration based.
+It can also run as Windows service.
 
 ## Configuration via service.json
-In this mode application will monitor designated cameras
+In this mode, application will monitor designated cameras
 
 ```
 "Scan": 30,
@@ -12,8 +12,35 @@ In this mode application will monitor designated cameras
 "Hosts": "192.168.0.103,192.168.0.129",
 "Compress": false,
 "Archive": 2,
-"Out": "D:/Cloud/Camera/Monitor"
+"Images": false,
+"All": false,
+"Out": "D:/Cloud/Camera/Monitor",
+"Action": null,    
 ```
+
+## Settings:
+- **Cameras** - list of cameras
+- **Hosts** - list of camera ips. 
+- **Compress** - do you want to compress retrieved video/images
+- **Out** - location of downloaded files
+- **Scan** - frequency of FTP scan (in seconds)
+- **Archive** - delete previously downloaded old files. Number specifies how many days you want to keep history
+- **Images** - Do you want to retrieve video as images
+- **Action** - Execute action on each retrieved image
+
+## Actions on image
+
+If you want some action to be executed on each retrieved image:
+```
+"Action":{
+    "Type": "Execute",
+    "Cmd": "%1",
+    "Payload": null
+    }
+```
+
+%1 will be replaced by file name. 
+
 
 ## Install as Windows service
 ```
@@ -35,12 +62,12 @@ Wikiled.YiScanner.exe Download -Cameras=1080i -Hosts=192.168.0.202 [-Compress] -
 ```
 
 Options:
-- **Camera** - list of cameras
+- **Cameras** - list of cameras
 - **Hosts** - list of hosts. 
 - **Compress** - do you want to compress files
 - **Out** - location of downloaded files
 - **Scan** - frequency of FTP scan (in seconds)
-- **Archive** - delete previously downloaded old files. Number specifies how many days you want to keep history
+- **Archive** - delete previously downloaded old files. Number specifies how many days you want to keep history.
 
 
 # FTP configuration 

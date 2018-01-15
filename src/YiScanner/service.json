@@ -6,10 +6,5 @@
   "Archive": 2,
   "Images": true,
   "Out": "D:/Cloud/GoogleUni/Camera/Monitor",
-  "Action":
-  {
-    "Type": "Execute",
-    "Cmd": "%1",
-    "Payload": null
-  }
+  "Action": null
 }
