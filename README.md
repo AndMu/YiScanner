@@ -3,6 +3,8 @@
 The application supports two modes - arguments explicitly specified in command prompt and configuration based.
 It can also run as Windows service.
 
+[![GitHub release](https://img.shields.io/github/release/AndMu/YiScanner.svg)](https://github.com/AndMu/YiScanner/releases)
+
 ## Configuration via service.json
 In this mode, application will monitor designated cameras
 
