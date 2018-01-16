@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Moq;
 using NUnit.Framework;
 using Wikiled.YiScanner.Network;
 
@@ -22,14 +21,7 @@ namespace Wikiled.YiScanner.Tests.Network
         [Test]
         public async Task FindAddress()
         {
-            var result = await instance.FindAddresses(80).ToArray();
-        }
-
-        [Test]
-        public void GetAllAdresses()
-        {
-            var result = instance.GetAllAdresses().ToArray();
-            Assert.Greater(result.Length, 1);
+            var result = await instance.FindAddresses("192.168.0.0/255.255.255.0", 21).ToArray();
         }
 
         private NetworkScanner CreateNetworkScanner()
