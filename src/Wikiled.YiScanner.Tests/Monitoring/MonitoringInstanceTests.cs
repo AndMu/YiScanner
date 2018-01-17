@@ -15,7 +15,7 @@ namespace Wikiled.YiScanner.Tests.Monitoring
     {
         private MonitoringConfig monitoringConfig;
 
-        private Mock<IDestinationFactory> mockDestinationFactory;
+        private Mock<ISourceFactory> mockDestinationFactory;
 
         private Mock<IFtpDownloader> ftpDownloader;
 
@@ -32,9 +32,9 @@ namespace Wikiled.YiScanner.Tests.Monitoring
             monitoringConfig = new MonitoringConfig();
             monitoringConfig.Scan = 1;
             archiving = new Mock<IDeleteArchiving>();
-            mockDestinationFactory = new Mock<IDestinationFactory>();
+            mockDestinationFactory = new Mock<ISourceFactory>();
             ftpDownloader = new Mock<IFtpDownloader>();
-            mockDestinationFactory.Setup(item => item.GetDestinations())
+            mockDestinationFactory.Setup(item => item.GetSources())
                                   .Returns(new[] { ftpDownloader.Object });
             instance = CreateMonitoringInstance();
         }

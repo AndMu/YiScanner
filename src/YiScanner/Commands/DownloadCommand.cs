@@ -28,14 +28,9 @@ namespace Wikiled.YiScanner.Commands
             return new NullPredicate();
         }
 
-        protected override void ProcessFtp(IDestinationFactory factory)
+        protected override void ProcessFtp(ISourceFactory factory)
         {
-            var downloaders = factory.GetDestinations();
-            if (downloaders.Length == 0)
-            {
-                return;
-            }
-
+            var downloaders = factory.GetSources();
             var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download());
             var archiving = new DeleteArchiving();
             if (Archive.HasValue)

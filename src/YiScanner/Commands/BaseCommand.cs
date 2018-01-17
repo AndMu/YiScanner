@@ -47,12 +47,12 @@ namespace Wikiled.YiScanner.Commands
         public override void Execute()
         {
             log.Info("Starting camera download...");
-            DestinationFactory factory = new DestinationFactory(ftpConfig, this, ConstructPredicate());
+            SourceFactory factory = new SourceFactory(ftpConfig, this, ConstructPredicate());
             ProcessFtp(factory);
         }
 
         protected abstract IPredicate ConstructPredicate();
 
-        protected abstract void ProcessFtp(IDestinationFactory downloaders);
+        protected abstract void ProcessFtp(ISourceFactory downloaders);
     }
 }

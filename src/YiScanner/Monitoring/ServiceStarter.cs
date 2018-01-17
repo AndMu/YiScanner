@@ -24,7 +24,7 @@ namespace Wikiled.YiScanner.Monitoring
 
             MonitoringConfig config = JsonConvert.DeserializeObject<MonitoringConfig>(File.ReadAllText(serviceName));
             var predicate = config.All ? new NullPredicate() : (IPredicate)new NewFilesPredicate();
-            DestinationFactory factory = new DestinationFactory(ftpConfig, config, predicate);
+            SourceFactory factory = new SourceFactory(ftpConfig, config, predicate);
             HostFactory.Run(
                 x =>
                 {
