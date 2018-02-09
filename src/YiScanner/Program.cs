@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reactive.Concurrency;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 using NLog;
 using Wikiled.Core.Utility.Arguments;
 using Wikiled.YiScanner.Client;
-using Wikiled.YiScanner.Client.Archive;
-using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Commands;
 using Wikiled.YiScanner.Monitoring;
 

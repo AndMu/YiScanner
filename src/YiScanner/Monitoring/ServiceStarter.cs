@@ -6,6 +6,7 @@ using Topshelf;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Client.Predicates;
+using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Monitoring
 {

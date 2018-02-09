@@ -44,7 +44,7 @@ namespace Wikiled.YiScanner.Client
             this.config = config;
         }
 
-        public async Task Download()
+        public async Task<DateTime> Download()
         {
             // Get the object used to communicate with the server.  
             using (var client = new FtpClient(camera.Address))
@@ -58,7 +58,9 @@ namespace Wikiled.YiScanner.Client
                 await Retrieve(client, config.Path).ConfigureAwait(false);
             }
 
-            lastScan = DateTime.Now;
+            var now = DateTime.Now;
+            lastScan = now;
+            return now;
         }
 
         private async Task ProcessFile(FtpClient client, FtpListItem item)

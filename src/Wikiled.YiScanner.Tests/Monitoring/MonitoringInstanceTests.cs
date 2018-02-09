@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Monitoring;
+using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Tests.Monitoring
 {
@@ -34,8 +35,8 @@ namespace Wikiled.YiScanner.Tests.Monitoring
             archiving = new Mock<IDeleteArchiving>();
             mockDestinationFactory = new Mock<ISourceFactory>();
             ftpDownloader = new Mock<IFtpDownloader>();
-            mockDestinationFactory.Setup(item => item.GetSources())
-                                  .Returns(new[] { ftpDownloader.Object });
+            mockDestinationFactory.Setup(item => item.GetSources(It.IsAny<IHostManager>()))
+                                  .Returns(new[] { ftpDownloader.Object }.ToObservable());
             instance = CreateMonitoringInstance();
         }
 
@@ -50,7 +51,7 @@ namespace Wikiled.YiScanner.Tests.Monitoring
         [Test]
         public void DownloadSlow()
         {
-            ftpDownloader.Setup(item => item.Download()).Returns(() => Observable.Return(true).Delay(TimeSpan.FromSeconds(5), scheduler).ToTask());
+            ftpDownloader.Setup(item => item.Download()).Returns(() => Observable.Return(DateTime.Now).Delay(TimeSpan.FromSeconds(5), scheduler).ToTask());
             instance.Start();
             scheduler.AdvanceBy(TimeSpan.FromSeconds(10).Ticks);
             ftpDownloader.Verify(item => item.Download(), Times.Exactly(2));

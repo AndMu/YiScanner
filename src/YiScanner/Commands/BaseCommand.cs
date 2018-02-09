@@ -6,6 +6,7 @@ using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Destinations;
 using Wikiled.YiScanner.Monitoring;
+using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Commands
 {
@@ -21,7 +22,13 @@ namespace Wikiled.YiScanner.Commands
             this.ftpConfig = ftpConfig;
         }
 
-        public ActionConfig Action { get; }
+        public ActionConfig Action { get; set; }
+
+        [Description("Auto discover cameras")]
+        public bool? AutoDiscover { get; set; }
+
+        [Description("Discovery network mask")]
+        public string NetworkMask { get; set; }
 
         [Required]
         [Description("List of camera names")]

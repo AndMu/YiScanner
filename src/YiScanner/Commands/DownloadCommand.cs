@@ -1,12 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Reactive.Linq;
 using NLog;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Client.Predicates;
-using Wikiled.YiScanner.Monitoring;
+using Wikiled.YiScanner.Monitoring.Source;
+using Wikiled.YiScanner.Network;
 
 namespace Wikiled.YiScanner.Commands
 {
@@ -30,16 +30,21 @@ namespace Wikiled.YiScanner.Commands
 
         protected override void ProcessFtp(ISourceFactory factory)
         {
-            var downloaders = factory.GetSources();
-            var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download());
-            var archiving = new DeleteArchiving();
-            if (Archive.HasValue)
+            using (var hostManager = AutoDiscover == true ? (IHostManager)new StaticHostManager(this) : new DynamicHostManager(this, new NetworkScanner()))
             {
-                log.Info("Archiving...");
-                archiving.Archive(Out, TimeSpan.FromDays(Archive.Value));
-            }
+                var downloaders = factory.GetSources(hostManager);
+                var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download())
+                                       .Merge();
 
-            Task.WhenAll(tasks).Wait();
+                var archiving = new DeleteArchiving();
+                if (Archive.HasValue)
+                {
+                    log.Info("Archiving...");
+                    archiving.Archive(Out, TimeSpan.FromDays(Archive.Value));
+                }
+
+                tasks.LastOrDefaultAsync().Wait();
+            }
         }
     }
 }

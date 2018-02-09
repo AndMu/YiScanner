@@ -7,6 +7,7 @@ using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Monitoring;
+using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Commands
 {

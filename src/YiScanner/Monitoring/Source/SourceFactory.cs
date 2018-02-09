@@ -1,18 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Reactive.Linq;
+using NLog;
 using Wikiled.Core.Utility.Arguments;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Destinations;
 
-namespace Wikiled.YiScanner.Monitoring
+namespace Wikiled.YiScanner.Monitoring.Source
 {
-    public abstract class SourceFactoryBase : ISourceFactory
+    public class SourceFactory : ISourceFactory
     {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         private readonly IPredicate filePredicate;
 
         private readonly FtpConfig ftpConfig;
 
-        protected SourceFactoryBase(FtpConfig ftpConfig, IScanConfig config, IPredicate filePredicate)
+        public SourceFactory(FtpConfig ftpConfig, IScanConfig config, IPredicate filePredicate)
         {
             Guard.NotNull(() => ftpConfig, ftpConfig);
             Guard.NotNull(() => config, config);
@@ -24,9 +28,14 @@ namespace Wikiled.YiScanner.Monitoring
 
         public IScanConfig Config { get; }
 
-        public abstract IEnumerable<IFtpDownloader> GetSources();
+        public IObservable<IFtpDownloader> GetSources(IHostManager manager)
+        {
+            var destination = ConstructDestination();
+            log.Info("Download from camera(s)");
+            return manager.GetHosts().Select(item => ConstructDownloader(item, destination));
+        }
 
-        protected IDestination ConstructDestination()
+        private IDestination ConstructDestination()
         {
             IDestination destination = Config.Images ? (IDestination)new PictureFileDestination(Config.Out) : new FileDestination(Config.Out);
             if (Config.Compress)
@@ -42,11 +51,11 @@ namespace Wikiled.YiScanner.Monitoring
             return destination;
         }
 
-        protected IFtpDownloader ConstructDownloader(string cameraName, string host, IDestination destination)
+        private IFtpDownloader ConstructDownloader(FtpHost  host, IDestination destination)
         {
             return new FtpDownloader(
                 ftpConfig,
-                new CameraDescription(cameraName, host),
+                new CameraDescription(host.Name, host.Address),
                 destination,
                 filePredicate);
         }

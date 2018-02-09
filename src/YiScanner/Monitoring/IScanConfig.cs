@@ -17,5 +17,9 @@ namespace Wikiled.YiScanner.Monitoring
         int? Archive { get; }
 
         ActionConfig Action { get; }
+
+        bool? AutoDiscover { get; }
+
+        string NetworkMask { get; }
     }
 }

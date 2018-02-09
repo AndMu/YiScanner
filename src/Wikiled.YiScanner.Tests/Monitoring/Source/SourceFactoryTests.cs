@@ -1,12 +1,15 @@
 using System;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Monitoring;
+using Wikiled.YiScanner.Monitoring.Source;
 
-namespace Wikiled.YiScanner.Tests.Monitoring
+namespace Wikiled.YiScanner.Tests.Monitoring.Source
 {
     [TestFixture]
     public class SourceFactoryTests
@@ -19,6 +22,8 @@ namespace Wikiled.YiScanner.Tests.Monitoring
 
         private SourceFactory instance;
 
+        private StaticHostManager manager;
+
         [SetUp]
         public void SetUp()
         {
@@ -27,21 +32,22 @@ namespace Wikiled.YiScanner.Tests.Monitoring
             scanConfig = new MonitoringConfig();
             scanConfig.Out = "Out";
             mockPredicate = new Mock<IPredicate>();
+            manager = new StaticHostManager(scanConfig);
             instance = CreateFactory();
         }
 
         [Test]
-        public void GetSources()
+        public async Task GetSources()
         {
-            var result = instance.GetSources().ToArray();
+            var result = await instance.GetSources(manager).ToArray();
             Assert.AreEqual(0, result.Length);
 
             scanConfig.Cameras = "Test";
-            result = instance.GetSources().ToArray();
+            result = await instance.GetSources(manager).ToArray();
             Assert.AreEqual(0, result.Length);
 
             scanConfig.Hosts = "Test";
-            result = instance.GetSources().ToArray();
+            result = await instance.GetSources(manager).ToArray();
             Assert.AreEqual(1, result.Length);
         }
 

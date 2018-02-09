@@ -21,5 +21,9 @@ namespace Wikiled.YiScanner.Monitoring
         public int? Archive { get; set; }
 
         public ActionConfig Action { get; set; }
+
+        public bool? AutoDiscover { get; set; }
+
+        public string NetworkMask { get; set; }
     }
 }
