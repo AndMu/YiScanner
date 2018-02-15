@@ -6,6 +6,7 @@ using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Monitoring;
+using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Commands
 {
@@ -31,7 +32,7 @@ namespace Wikiled.YiScanner.Commands
             return new NewFilesPredicate();
         }
 
-        protected override void ProcessFtp(IDestinationFactory downloaders)
+        protected override void ProcessFtp(ISourceFactory downloaders)
         {
             var instance = new MonitoringInstance(TaskPoolScheduler.Default, this, downloaders, new DeleteArchiving());
             if (instance.Start())

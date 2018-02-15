@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using NLog;
-using Wikiled.Common.Arguments;
-using Wikiled.YiScanner.Client;
+using Wikiled.Core.Utility.Arguments;
 using Wikiled.YiScanner.Client.Archive;
+using Wikiled.YiScanner.Monitoring.Source;
+using Wikiled.YiScanner.Network;
 
 namespace Wikiled.YiScanner.Monitoring
 {
@@ -17,15 +17,17 @@ namespace Wikiled.YiScanner.Monitoring
 
         private readonly IMonitoringConfig configuration;
 
-        private readonly IFtpDownloader[] downloaders;
-
         private readonly IDeleteArchiving archiving;
 
         private readonly List<IDisposable> connections = new List<IDisposable>();
 
         private readonly IScheduler scheduler;
 
-        public MonitoringInstance(IScheduler scheduler, IMonitoringConfig configuration, IDestinationFactory downloaderFactory, IDeleteArchiving archiving)
+        private readonly ISourceFactory downloaderFactory;
+
+        private IHostManager hostManager;
+
+        public MonitoringInstance(IScheduler scheduler, IMonitoringConfig configuration, ISourceFactory downloaderFactory, IDeleteArchiving archiving)
         {
             Guard.NotNull(() => configuration, configuration);
             Guard.NotNull(() => scheduler, scheduler);
@@ -34,33 +36,29 @@ namespace Wikiled.YiScanner.Monitoring
             this.configuration = configuration;
             this.archiving = archiving;
             this.scheduler = scheduler;
-            downloaders = downloaderFactory.GetDestinations();
+            this.downloaderFactory = downloaderFactory;
         }
 
         public bool Start()
         {
-            if (downloaders.Length == 0)
-            {
-                return false;
-            }
-
+            hostManager = configuration.AutoDiscover == true ? new DynamicHostManager(configuration, new NetworkScanner()) : (IHostManager)new StaticHostManager(configuration);
             if (configuration.Archive.HasValue)
             {
                 var archivingObservable = Observable.Empty<bool>()
-                                          .Delay(TimeSpan.FromDays(1), scheduler)
-                                          .Concat(Observable.FromAsync(Archiving, scheduler))
-                                          .Repeat()
-                                          .SubscribeOn(scheduler)
-                                          .Subscribe();
+                                                    .Delay(TimeSpan.FromDays(1), scheduler)
+                                                    .Concat(Observable.FromAsync(Archiving, scheduler))
+                                                    .Repeat()
+                                                    .SubscribeOn(scheduler)
+                                                    .Subscribe();
                 connections.Add(archivingObservable);
             }
 
             var observableMonitor = Observable.Empty<bool>()
-                                    .Delay(TimeSpan.FromSeconds(configuration.Scan), scheduler)
-                                    .Concat(Observable.FromAsync(Download, scheduler))
-                                    .Repeat()
-                                    .SubscribeOn(scheduler)
-                                    .Subscribe();
+                                              .Delay(TimeSpan.FromSeconds(configuration.Scan), scheduler)
+                                              .Concat(Observable.FromAsync(Download, scheduler))
+                                              .Repeat()
+                                              .SubscribeOn(scheduler)
+                                              .Subscribe();
 
             connections.Add(observableMonitor);
             return true;
@@ -68,6 +66,7 @@ namespace Wikiled.YiScanner.Monitoring
 
         public void Stop()
         {
+            hostManager.Dispose();
             foreach (var connection in connections)
             {
                 connection.Dispose();
@@ -89,8 +88,21 @@ namespace Wikiled.YiScanner.Monitoring
             log.Info("Checking Ftp....");
             try
             {
-                var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download());
-                await Task.WhenAll(tasks).ConfigureAwait(false);
+                var tasks = downloaderFactory.GetSources(hostManager)
+                                             .Select(ftpDownloader => ftpDownloader.Download())
+                                             .Merge();
+
+                tasks.Subscribe(
+                    item =>
+                        {
+                            log.Info("Done!");
+                        },
+                    () =>
+                        {
+                            var now = scheduler.Now;
+                            log.Info("Done!");
+                        });
+                await tasks;
                 log.Info("Done!");
                 return true;
             }

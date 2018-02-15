@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Detection\**" />
+    <EmbeddedResource Remove="Detection\**" />
+    <None Remove="Detection\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Accord.Video.FFMPEG" Version="3.8.0" />
     <PackageReference Include="FluentFTP" Version="19.1.2" />
     <PackageReference Include="IPNetwork2" Version="2.1.2" />
@@ -35,10 +41,6 @@
     <None Update="nlog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Detection\" />
   </ItemGroup>
 
   <PropertyGroup>

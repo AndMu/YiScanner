@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using NLog;
 
@@ -46,6 +47,22 @@ namespace Wikiled.YiScanner.Client.Archive
                             log.Error(ex);
                         }
                     });
+
+            try
+            {
+                var directories = Directory.EnumerateDirectories(destination);
+                foreach (var directory in directories)
+                {
+                    if (!Directory.EnumerateFileSystemEntries(directory).Any())
+                    {
+                        Directory.Delete(directory);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
         }
     }
 }

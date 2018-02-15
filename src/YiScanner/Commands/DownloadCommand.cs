@@ -1,12 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Reactive.Linq;
 using NLog;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Client.Predicates;
-using Wikiled.YiScanner.Monitoring;
+using Wikiled.YiScanner.Monitoring.Source;
+using Wikiled.YiScanner.Network;
 
 namespace Wikiled.YiScanner.Commands
 {
@@ -28,23 +28,23 @@ namespace Wikiled.YiScanner.Commands
             return new NullPredicate();
         }
 
-        protected override void ProcessFtp(IDestinationFactory factory)
+        protected override void ProcessFtp(ISourceFactory factory)
         {
-            var downloaders = factory.GetDestinations();
-            if (downloaders.Length == 0)
+            using (var hostManager = AutoDiscover == true ? new DynamicHostManager(this, new NetworkScanner()) : (IHostManager)new StaticHostManager(this))
             {
-                return;
-            }
+                var downloaders = factory.GetSources(hostManager);
+                var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download())
+                                       .Merge();
 
-            var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download());
-            var archiving = new DeleteArchiving();
-            if (Archive.HasValue)
-            {
-                log.Info("Archiving...");
-                archiving.Archive(Out, TimeSpan.FromDays(Archive.Value));
-            }
+                var archiving = new DeleteArchiving();
+                if (Archive.HasValue)
+                {
+                    log.Info("Archiving...");
+                    archiving.Archive(Out, TimeSpan.FromDays(Archive.Value));
+                }
 
-            Task.WhenAll(tasks).Wait();
+                tasks.LastOrDefaultAsync().Wait();
+            }
         }
     }
 }
