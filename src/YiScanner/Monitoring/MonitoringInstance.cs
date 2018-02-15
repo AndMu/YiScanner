@@ -41,7 +41,7 @@ namespace Wikiled.YiScanner.Monitoring
 
         public bool Start()
         {
-            hostManager = configuration.AutoDiscover == true ? (IHostManager)new StaticHostManager(configuration) : new DynamicHostManager(configuration, new NetworkScanner());
+            hostManager = configuration.AutoDiscover == true ? new DynamicHostManager(configuration, new NetworkScanner()) : (IHostManager)new StaticHostManager(configuration);
             if (configuration.Archive.HasValue)
             {
                 var archivingObservable = Observable.Empty<bool>()
@@ -91,6 +91,17 @@ namespace Wikiled.YiScanner.Monitoring
                 var tasks = downloaderFactory.GetSources(hostManager)
                                              .Select(ftpDownloader => ftpDownloader.Download())
                                              .Merge();
+
+                tasks.Subscribe(
+                    item =>
+                        {
+                            log.Info("Done!");
+                        },
+                    () =>
+                        {
+                            var now = scheduler.Now;
+                            log.Info("Done!");
+                        });
                 await tasks;
                 log.Info("Done!");
                 return true;

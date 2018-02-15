@@ -30,7 +30,7 @@ namespace Wikiled.YiScanner.Commands
 
         protected override void ProcessFtp(ISourceFactory factory)
         {
-            using (var hostManager = AutoDiscover == true ? (IHostManager)new StaticHostManager(this) : new DynamicHostManager(this, new NetworkScanner()))
+            using (var hostManager = AutoDiscover == true ? new DynamicHostManager(this, new NetworkScanner()) : (IHostManager)new StaticHostManager(this))
             {
                 var downloaders = factory.GetSources(hostManager);
                 var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download())

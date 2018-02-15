@@ -1,4 +1,5 @@
 using System;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using Microsoft.Reactive.Testing;
@@ -35,8 +36,13 @@ namespace Wikiled.YiScanner.Tests.Monitoring
             archiving = new Mock<IDeleteArchiving>();
             mockDestinationFactory = new Mock<ISourceFactory>();
             ftpDownloader = new Mock<IFtpDownloader>();
+            
+            var isExecuting = scheduler.CreateColdObservable(
+                new Recorded<Notification<IFtpDownloader>>(0, Notification.CreateOnNext(ftpDownloader.Object)),
+                new Recorded<Notification<IFtpDownloader>>(0, Notification.CreateOnCompleted<IFtpDownloader>()));
+
             mockDestinationFactory.Setup(item => item.GetSources(It.IsAny<IHostManager>()))
-                                  .Returns(new[] { ftpDownloader.Object }.ToObservable());
+                                  .Returns(isExecuting);
             instance = CreateMonitoringInstance();
         }
 
@@ -51,9 +57,20 @@ namespace Wikiled.YiScanner.Tests.Monitoring
         [Test]
         public void DownloadSlow()
         {
-            ftpDownloader.Setup(item => item.Download()).Returns(() => Observable.Return(DateTime.Now).Delay(TimeSpan.FromSeconds(5), scheduler).ToTask());
+            ftpDownloader.Setup(item => item.Download()).Returns(() => Observable.Return(DateTime.Now).Delay(TimeSpan.FromSeconds(1), scheduler)
+                                                                                 .Select(
+                                                                                     item =>
+                                                                                         {
+                                                                                             var now = scheduler.Now;
+                                                                                             return item;
+                                                                                         })
+                                                                                 .ToTask());
             instance.Start();
-            scheduler.AdvanceBy(TimeSpan.FromSeconds(10).Ticks);
+            for (int i = 0; i < 10; i++)
+            {
+                scheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+            }
+            
             ftpDownloader.Verify(item => item.Download(), Times.Exactly(2));
         }
 
