@@ -4,7 +4,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using NLog;
-using Wikiled.Core.Utility.Arguments;
+using Wikiled.Common.Arguments;
 using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Monitoring.Source;
 using Wikiled.YiScanner.Network;

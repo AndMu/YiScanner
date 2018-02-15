@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using NLog;
-using Wikiled.Core.Utility.Arguments;
+using Wikiled.Common.Arguments;
 
 namespace Wikiled.YiScanner.Monitoring.Source
 {
