@@ -1,7 +1,7 @@
 ﻿using System.IO;
+using System.IO.Compression;
 using System.Threading.Tasks;
-using ICSharpCode.SharpZipLib.Zip;
-using Wikiled.Core.Utility.Arguments;
+using Wikiled.Common.Arguments;
 using Wikiled.YiScanner.Client;
 
 namespace Wikiled.YiScanner.Destinations
@@ -13,13 +13,14 @@ namespace Wikiled.YiScanner.Destinations
             Guard.NotNull(() => header, header);
             Guard.NotNull(() => source, source);
             var memory = new MemoryStream();
-            var zipStream = new ZipOutputStream(memory);
-            zipStream.SetLevel(9);
-            ZipEntry entry = new ZipEntry(Path.GetFileName(header.FileName));
-            zipStream.PutNextEntry(entry);
-            source.CopyTo(zipStream);
-            zipStream.Flush();
-            zipStream.Finish();
+            ZipArchive archive = new ZipArchive(memory, ZipArchiveMode.Create, true);
+            ZipArchiveEntry readmeEntry = archive.CreateEntry(Path.GetFileName(header.FileName));
+
+            using (Stream entryStream = readmeEntry.Open())
+            {
+                source.CopyTo(entryStream);
+            }
+            
             memory.Position = 0;
             return Task.FromResult((header, (Stream)memory));
         }

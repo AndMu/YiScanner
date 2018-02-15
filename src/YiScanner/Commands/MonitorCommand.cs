@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reactive.Concurrency;
 using NLog;
@@ -38,7 +37,7 @@ namespace Wikiled.YiScanner.Commands
             if (instance.Start())
             {
                 log.Info("Press enter to stop monitoring...");
-                Console.ReadLine();
+                System.Console.ReadLine();
                 instance.Stop();
             }
         }

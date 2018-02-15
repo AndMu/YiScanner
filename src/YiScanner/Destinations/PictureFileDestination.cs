@@ -3,7 +3,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
 using Accord.Video.FFMPEG;
-using Wikiled.Core.Utility.Arguments;
+using Wikiled.Common.Arguments;
 using Wikiled.YiScanner.Client;
 
 namespace Wikiled.YiScanner.Destinations
