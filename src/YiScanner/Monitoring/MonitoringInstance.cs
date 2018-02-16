@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 using Wikiled.Common.Arguments;
@@ -88,21 +89,14 @@ namespace Wikiled.YiScanner.Monitoring
             log.Info("Checking Ftp....");
             try
             {
-                var tasks = downloaderFactory.GetSources(hostManager)
-                                             .Select(ftpDownloader => ftpDownloader.Download())
-                                             .Merge();
-
-                tasks.Subscribe(
-                    item =>
-                        {
-                            log.Info("Done!");
-                        },
-                    () =>
-                        {
-                            var now = scheduler.Now;
-                            log.Info("Done!");
-                        });
-                await tasks;
+                var sources  = await downloaderFactory.GetSources(hostManager).ToArray();
+                List<Task> tasks = new List<Task>();
+                foreach (var item in sources)
+                {
+                    tasks.Add(item.Download());
+                }
+                
+                await Task.WhenAll(tasks).ConfigureAwait(false);
                 log.Info("Done!");
                 return true;
             }
