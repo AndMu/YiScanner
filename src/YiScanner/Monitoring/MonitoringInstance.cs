@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 using Wikiled.Common.Arguments;
@@ -42,7 +42,9 @@ namespace Wikiled.YiScanner.Monitoring
 
         public bool Start()
         {
-            hostManager = configuration.AutoDiscover == true ? new DynamicHostManager(configuration, new NetworkScanner()) : (IHostManager)new StaticHostManager(configuration);
+            hostManager = configuration.AutoDiscover == true ? 
+                              new DynamicHostManager(configuration, new NetworkScanner(TaskPoolScheduler.Default), scheduler) : 
+                              (IHostManager)new StaticHostManager(configuration);
             if (configuration.Archive.HasValue)
             {
                 var archivingObservable = Observable.Empty<bool>()
@@ -89,8 +91,9 @@ namespace Wikiled.YiScanner.Monitoring
             log.Info("Checking Ftp....");
             try
             {
-                var sources  = await downloaderFactory.GetSources(hostManager).ToArray();
+                var sources  = downloaderFactory.GetSources(hostManager).ToArray();
                 List<Task> tasks = new List<Task>();
+                log.Info("Downloading from {0} cameras", sources.Length);
                 foreach (var item in sources)
                 {
                     tasks.Add(item.Download());

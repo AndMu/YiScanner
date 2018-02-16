@@ -2,9 +2,11 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Destinations;
+using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Tests.Destinations
 {
@@ -24,7 +26,7 @@ namespace Wikiled.YiScanner.Tests.Destinations
         [SetUp]
         public void SetUp()
         {
-            header = new VideoHeader(new CameraDescription("Test", "local"), "test.mov");
+            header = new VideoHeader(new HostInformation("Test", IPAddress.Parse("localhost")), "test.mov");
             mockDestination = new Mock<IDestination>();
             renameFunc = name => "test";
             stream = new Mock<Stream>();

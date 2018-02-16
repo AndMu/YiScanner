@@ -1,5 +1,7 @@
+using System.Net;
 using NUnit.Framework;
 using Wikiled.YiScanner.Client;
+using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Tests.Client
 {
@@ -12,7 +14,7 @@ namespace Wikiled.YiScanner.Tests.Client
         [TestCase(@"c:\Dir2\Dir\file", @"c:\out\Camera\Dir\file")]
         public void GetPath(string fileName, string expected)
         {
-            VideoHeader header = new VideoHeader(new CameraDescription("Camera", "Host"), fileName);
+            VideoHeader header = new VideoHeader(new HostInformation("Camera", IPAddress.Any), fileName);
             var result = header.GetPath(@"c:\out");
             Assert.AreEqual(expected, result);
         }

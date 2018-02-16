@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Reactive.Linq;
 using NLog;
 using Wikiled.Common.Arguments;
@@ -18,16 +19,16 @@ namespace Wikiled.YiScanner.Monitoring.Source
             this.config = config;
         }
 
-        public IObservable<FtpHost> GetHosts()
+        public IEnumerable<HostInformation> GetHosts()
         {
-            return GetHostsInternal().ToObservable();
+            return GetHostsInternal();
         }
 
         public void Dispose()
         {
         }
 
-        private IEnumerable<FtpHost> GetHostsInternal()
+        private IEnumerable<HostInformation> GetHostsInternal()
         {
             if (string.IsNullOrEmpty(config.Cameras))
             {
@@ -51,7 +52,7 @@ namespace Wikiled.YiScanner.Monitoring.Source
 
             for (int i = 0; i < listOfCameras.Length; i++)
             {
-                yield return new FtpHost(listOfCameras[i], listOfHosts[i]);
+                yield return new HostInformation(listOfCameras[i], IPAddress.Parse(listOfHosts[i]));
             }
         }
     }

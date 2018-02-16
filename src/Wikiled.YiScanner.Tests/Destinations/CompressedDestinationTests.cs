@@ -1,8 +1,10 @@
-using NUnit.Framework;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Destinations;
+using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Tests.Destinations
 {
@@ -32,7 +34,7 @@ namespace Wikiled.YiScanner.Tests.Destinations
         public async Task Transfer()
         {
             Assert.IsFalse(File.Exists(outFile));
-            VideoHeader header = new VideoHeader(new CameraDescription("camera", "localhost"), "test.txt");
+            VideoHeader header = new VideoHeader(new HostInformation("Camera", IPAddress.Any), "test.txt");
             using (StreamReader reader = new StreamReader(Path.Combine(TestContext.CurrentContext.TestDirectory, "Data", "Test.txt")))
             {
                 await instance.Transfer(header, reader.BaseStream).ConfigureAwait(false);

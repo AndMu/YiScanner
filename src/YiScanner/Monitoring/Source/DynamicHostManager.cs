@@ -1,37 +1,76 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
+using NLog;
+using Wikiled.Common.Arguments;
 using Wikiled.YiScanner.Network;
 
 namespace Wikiled.YiScanner.Monitoring.Source
 {
     public class DynamicHostManager : IHostManager
     {
-        private IObservable<FtpHost> result;
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        public DynamicHostManager(IScanConfig config, INetworkScanner scanner)
+        private readonly ConcurrentDictionary<IPAddress, HostInformation> result = new ConcurrentDictionary<IPAddress, HostInformation>();
+
+        private readonly IDisposable subscription;
+
+        private readonly INetworkScanner scanner;
+
+        private readonly IScanConfig config;
+
+        public DynamicHostManager(IScanConfig config, INetworkScanner scanner, IScheduler scheduler)
         {
-            result = scanner.FindAddresses(config.NetworkMask, 21)
-                                     .Select(GetHost);
-                  
-            var data = Observable.Interval(TimeSpan.FromMinutes(10))
-                                 .Select(item => scanner.FindAddresses(config.NetworkMask, 21))
-                                 .Merge();
+            Guard.NotNull(() => config, config);
+            Guard.NotNull(() => scanner, scanner);
+            Guard.NotNull(() => scheduler, scheduler);
+
+            this.scanner = scanner;
+            this.config = config;
+            subscription = Observable.Empty<bool>()
+                                     .Delay(TimeSpan.FromMinutes(10), scheduler)
+                                     .Concat(Observable.FromAsync(ScanFtp, scheduler))
+                                     .Repeat()
+                                     .SubscribeOn(scheduler)
+                                     .Subscribe();
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            subscription.Dispose();
         }
 
-        public IObservable<FtpHost> GetHosts()
+        public IEnumerable<HostInformation> GetHosts()
         {
-            throw new NotImplementedException();
+            return result.Values;
         }
 
-        private FtpHost GetHost(IPAddress address)
+        private async Task<bool> ScanFtp()
         {
-            return new FtpHost(null, null);
+            ConcurrentDictionary<IPAddress, HostInformation> thisCycle = new ConcurrentDictionary<IPAddress, HostInformation>();
+            await scanner.FindAddresses(config.NetworkMask, 21)
+                         .ForEachAsync(
+                             item =>
+                                 {
+                                     thisCycle[item.Address] = item;
+                                     result[item.Address] = item;
+                                 })
+                         .ConfigureAwait(false);
+            foreach (var host in result.Keys.ToArray())
+            {
+                if (!thisCycle.ContainsKey(host))
+                {
+                    HostInformation ftpHost;
+                    result.TryRemove(host, out ftpHost);
+                }
+            }
+
+            return true;
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Wikiled.YiScanner.Monitoring.Source
 {
     public interface IHostManager : IDisposable
     {
-        IObservable<FtpHost> GetHosts();
+        IEnumerable<HostInformation> GetHosts();
     }
 }

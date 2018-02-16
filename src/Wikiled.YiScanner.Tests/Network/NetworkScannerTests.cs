@@ -1,4 +1,4 @@
-using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -9,7 +9,6 @@ namespace Wikiled.YiScanner.Tests.Network
     [TestFixture]
     public class NetworkScannerTests
     {
-
         private NetworkScanner instance;
 
         [SetUp]
@@ -26,7 +25,7 @@ namespace Wikiled.YiScanner.Tests.Network
 
         private NetworkScanner CreateNetworkScanner()
         {
-            return new NetworkScanner();
+            return new NetworkScanner(TaskPoolScheduler.Default);
         }
     }
 }

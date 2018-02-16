@@ -37,17 +37,17 @@ namespace Wikiled.YiScanner.Tests.Monitoring.Source
         }
 
         [Test]
-        public async Task GetSources()
+        public void GetSources()
         {
-            var result = await instance.GetSources(manager).ToArray();
+            var result = instance.GetSources(manager).ToArray();
             Assert.AreEqual(0, result.Length);
 
             scanConfig.Cameras = "Test";
-            result = await instance.GetSources(manager).ToArray();
+            result = instance.GetSources(manager).ToArray();
             Assert.AreEqual(0, result.Length);
 
             scanConfig.Hosts = "Test";
-            result = await instance.GetSources(manager).ToArray();
+            result = instance.GetSources(manager).ToArray();
             Assert.AreEqual(1, result.Length);
         }
 

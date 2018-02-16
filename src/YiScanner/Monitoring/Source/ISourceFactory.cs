@@ -1,10 +1,10 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Wikiled.YiScanner.Client;
 
 namespace Wikiled.YiScanner.Monitoring.Source
 {
     public interface ISourceFactory
     {
-        IObservable<IFtpDownloader> GetSources(IHostManager hosts);
+        IEnumerable<IFtpDownloader> GetSources(IHostManager hosts);
     }
 }

@@ -8,6 +8,7 @@ using NLog;
 using Wikiled.Common.Arguments;
 using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Destinations;
+using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Client
 {
@@ -15,7 +16,7 @@ namespace Wikiled.YiScanner.Client
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        private readonly CameraDescription camera;
+        private readonly HostInformation camera;
 
         private readonly FtpConfig config;
 
@@ -29,7 +30,7 @@ namespace Wikiled.YiScanner.Client
 
         public FtpDownloader(
             FtpConfig config,
-            CameraDescription camera,
+            HostInformation camera,
             IDestination destination,
             IPredicate predicate)
         {
@@ -47,7 +48,7 @@ namespace Wikiled.YiScanner.Client
         public async Task<DateTime> Download()
         {
             // Get the object used to communicate with the server.  
-            using (var client = new FtpClient(camera.Address))
+            using (var client = new FtpClient(camera.Address.ToString()))
             {
                 log.Info("Connecting: {0}", camera.Address);
                 client.Credentials = new NetworkCredential(

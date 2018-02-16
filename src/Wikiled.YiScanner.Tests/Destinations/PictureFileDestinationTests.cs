@@ -1,10 +1,11 @@
 using System;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
-using Moq;
 using NUnit.Framework;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Destinations;
+using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Tests.Destinations
 {
@@ -28,7 +29,7 @@ namespace Wikiled.YiScanner.Tests.Destinations
                 Directory.Delete(outPath, true);
             }
 
-            header = new VideoHeader(new CameraDescription("Test", "local"), "test.mov");
+            header = new VideoHeader(new HostInformation("Camera", IPAddress.Any), "test.mov");
             instance = CreatePictureFileDestination();
             stream = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "data", "centaur_1.mpg"));
         }

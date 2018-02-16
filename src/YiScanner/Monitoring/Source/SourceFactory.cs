@@ -1,5 +1,5 @@
-﻿using System;
-using System.Reactive.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using NLog;
 using Wikiled.Common.Arguments;
 using Wikiled.YiScanner.Client;
@@ -28,7 +28,7 @@ namespace Wikiled.YiScanner.Monitoring.Source
 
         public IScanConfig Config { get; }
 
-        public IObservable<IFtpDownloader> GetSources(IHostManager manager)
+        public IEnumerable<IFtpDownloader> GetSources(IHostManager manager)
         {
             var destination = ConstructDestination();
             log.Info("Download from camera(s)");
@@ -51,11 +51,11 @@ namespace Wikiled.YiScanner.Monitoring.Source
             return destination;
         }
 
-        private IFtpDownloader ConstructDownloader(FtpHost  host, IDestination destination)
+        private IFtpDownloader ConstructDownloader(HostInformation host, IDestination destination)
         {
             return new FtpDownloader(
                 ftpConfig,
-                new CameraDescription(host.Name, host.Address),
+                host,
                 destination,
                 filePredicate);
         }

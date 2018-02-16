@@ -37,7 +37,7 @@ namespace Wikiled.YiScanner.Tests.Monitoring
             ftpDownloader = new Mock<IFtpDownloader>();
 
             mockDestinationFactory.Setup(item => item.GetSources(It.IsAny<IHostManager>()))
-                                  .Returns(new[] { ftpDownloader.Object }.ToObservable());
+                                  .Returns(new[] { ftpDownloader.Object });
             instance = CreateMonitoringInstance();
         }
 

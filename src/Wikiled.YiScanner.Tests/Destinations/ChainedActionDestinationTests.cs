@@ -1,10 +1,12 @@
 using System;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Destinations;
+using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Tests.Destinations
 {
@@ -24,7 +26,7 @@ namespace Wikiled.YiScanner.Tests.Destinations
         [SetUp]
         public void SetUp()
         {
-            header = new VideoHeader(new CameraDescription("Test", "local"), "test.mov");
+            header = new VideoHeader(new HostInformation("Camera", IPAddress.Any), "test.mov");
             mockDestination = new Mock<IDestination>();
             mockAction = new Mock<IPriorAction>();
             stream = new Mock<Stream>();
@@ -63,7 +65,7 @@ namespace Wikiled.YiScanner.Tests.Destinations
                       .Returns(Task.FromResult((header, stream.Object)));
             mockDestination.Setup(item => item.ResolveName(header)).Returns("Test");
             mockDestination.Setup(item => item.Transfer(It.IsAny<VideoHeader>(), stream.Object)).Returns(Task.CompletedTask);
-            await instance.Transfer(header, stream.Object);
+            await instance.Transfer(header, stream.Object).ConfigureAwait(false);
             mockAction.Verify(item => item.BeforeTransfer(header, stream.Object), Times.Exactly(1));
         }
 
