@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
+using System.Net;
 using Moq;
 using NUnit.Framework;
 using Wikiled.YiScanner.Client;
@@ -46,7 +45,7 @@ namespace Wikiled.YiScanner.Tests.Monitoring.Source
             result = instance.GetSources(manager).ToArray();
             Assert.AreEqual(0, result.Length);
 
-            scanConfig.Hosts = "Test";
+            scanConfig.Hosts = IPAddress.Any.ToString();
             result = instance.GetSources(manager).ToArray();
             Assert.AreEqual(1, result.Length);
         }

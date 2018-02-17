@@ -1,7 +1,7 @@
 ﻿{
   "Scan": 30,
-  "Cameras": "1080i",
-  "Hosts": "192.168.0.105",
+  "AutoDiscover": true,
+  "NetworkMask": "192.168.0.0/255.255.255.0",
   "Compress": false,
   "Archive": 2,
   "Images": true,

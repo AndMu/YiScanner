@@ -44,7 +44,7 @@ namespace Wikiled.YiScanner.Tests.Destinations
         public void ResolveName()
         {
             var result = instance.ResolveName(header);
-            Assert.AreEqual(Path.Combine(outPath, "Test", "test.png"), result);
+            Assert.AreEqual(Path.Combine(outPath, "Camera", "test.png"), result);
         }
 
         [Test]
@@ -52,12 +52,12 @@ namespace Wikiled.YiScanner.Tests.Destinations
         {
             var result = instance.IsDownloaded(header);
             Assert.IsFalse(result);
-            result = File.Exists(Path.Combine(outPath, "test", "test.png"));
+            result = File.Exists(Path.Combine(outPath, "Camera", "test.png"));
             Assert.IsFalse(result);
 
             await instance.Transfer(header, stream).ConfigureAwait(false);
 
-            result = File.Exists(Path.Combine(outPath, "test", "test.png"));
+            result = File.Exists(Path.Combine(outPath, "Camera", "test.png"));
             Assert.IsTrue(result);
             result = instance.IsDownloaded(header);
             Assert.IsTrue(result);

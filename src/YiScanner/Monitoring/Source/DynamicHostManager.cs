@@ -32,9 +32,8 @@ namespace Wikiled.YiScanner.Monitoring.Source
 
             this.scanner = scanner;
             this.config = config;
-            subscription = Observable.Empty<bool>()
-                                     .Delay(TimeSpan.FromMinutes(10), scheduler)
-                                     .Concat(Observable.FromAsync(ScanFtp, scheduler))
+            subscription = Observable.FromAsync(ScanFtp, scheduler)
+                                     .Delay(TimeSpan.FromSeconds(10), scheduler)
                                      .Repeat()
                                      .SubscribeOn(scheduler)
                                      .Subscribe();
@@ -52,6 +51,7 @@ namespace Wikiled.YiScanner.Monitoring.Source
 
         private async Task<bool> ScanFtp()
         {
+            log.Debug("ScanFtp");
             ConcurrentDictionary<IPAddress, HostInformation> thisCycle = new ConcurrentDictionary<IPAddress, HostInformation>();
             await scanner.FindAddresses(config.NetworkMask, 21)
                          .ForEachAsync(
@@ -65,8 +65,8 @@ namespace Wikiled.YiScanner.Monitoring.Source
             {
                 if (!thisCycle.ContainsKey(host))
                 {
-                    HostInformation ftpHost;
-                    result.TryRemove(host, out ftpHost);
+                    log.Debug("Removing: {0}", host);
+                    result.TryRemove(host, out _);
                 }
             }
 
