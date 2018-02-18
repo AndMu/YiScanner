@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <AssemblyName>Wikiled.YiScanner</AssemblyName>
+    <StartupObject>Wikiled.YiScanner.Program</StartupObject>
     <OutputType>Exe</OutputType>
     <TargetFramework>NET462</TargetFramework>
     <RuntimeIdentifier>win7-x86</RuntimeIdentifier>
@@ -42,11 +44,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <PropertyGroup>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AssemblyName>Wikiled.YiScanner</AssemblyName>
-    <StartupObject>Wikiled.YiScanner.Program</StartupObject>
-  </PropertyGroup>
 
 </Project>
