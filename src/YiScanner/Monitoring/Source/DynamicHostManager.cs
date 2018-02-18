@@ -32,11 +32,7 @@ namespace Wikiled.YiScanner.Monitoring.Source
 
             this.scanner = scanner;
             this.config = config;
-            subscription = Observable.FromAsync(ScanFtp, scheduler)
-                                     .Delay(TimeSpan.FromSeconds(10), scheduler)
-                                     .Repeat()
-                                     .SubscribeOn(scheduler)
-                                     .Subscribe();
+            subscription = Observable.FromAsync(ScanFtp, scheduler).Delay(TimeSpan.FromSeconds(10), scheduler).Repeat().SubscribeOn(scheduler).Subscribe();
         }
 
         public void Dispose()
@@ -58,14 +54,18 @@ namespace Wikiled.YiScanner.Monitoring.Source
                              item =>
                                  {
                                      thisCycle[item.Address] = item;
-                                     result[item.Address] = item;
+                                     if (!result.ContainsKey(item.Address))
+                                     {
+                                         log.Info("Adding new host: {0}", item.Address);
+                                         result[item.Address] = item;
+                                     }
                                  })
                          .ConfigureAwait(false);
             foreach (var host in result.Keys.ToArray())
             {
                 if (!thisCycle.ContainsKey(host))
                 {
-                    log.Debug("Removing: {0}", host);
+                    log.Info("Removing: {0}", host);
                     result.TryRemove(host, out _);
                 }
             }
