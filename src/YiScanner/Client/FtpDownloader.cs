@@ -39,6 +39,7 @@ namespace Wikiled.YiScanner.Client
             Guard.NotNull(() => destination, destination);
             Guard.NotNull(() => predicate, predicate);
             maskRegex = FileMask.GenerateFitMask(config.FileMask);
+            log.Debug("Generated mask: {0}", maskRegex);
             this.camera = camera;
             this.destination = destination;
             this.predicate = predicate;
@@ -129,10 +130,6 @@ namespace Wikiled.YiScanner.Client
                         {
                             log.Debug("Ignoring file - too recent: <{0}>", item.FullName);
                         }
-                    }
-                    else
-                    {
-                        log.Debug("Ignoring file: <{0}>", item.FullName);
                     }
                 }
                 else if (item.Type == FtpFileSystemObjectType.Directory)
