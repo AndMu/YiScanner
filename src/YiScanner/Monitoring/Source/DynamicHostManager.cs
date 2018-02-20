@@ -16,7 +16,7 @@ namespace Wikiled.YiScanner.Monitoring.Source
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        private readonly ConcurrentDictionary<IPAddress, HostInformation> result = new ConcurrentDictionary<IPAddress, HostInformation>();
+        private readonly ConcurrentDictionary<IPAddress, Host> result = new ConcurrentDictionary<IPAddress, Host>();
 
         private readonly IDisposable subscription;
 
@@ -40,7 +40,7 @@ namespace Wikiled.YiScanner.Monitoring.Source
             subscription.Dispose();
         }
 
-        public IEnumerable<HostInformation> GetHosts()
+        public IEnumerable<Host> GetHosts()
         {
             return result.Values;
         }
@@ -48,7 +48,7 @@ namespace Wikiled.YiScanner.Monitoring.Source
         private async Task<bool> ScanFtp()
         {
             log.Debug("ScanFtp");
-            ConcurrentDictionary<IPAddress, HostInformation> thisCycle = new ConcurrentDictionary<IPAddress, HostInformation>();
+            ConcurrentDictionary<IPAddress, Host> thisCycle = new ConcurrentDictionary<IPAddress, Host>();
             await scanner.FindAddresses(config.NetworkMask, 21)
                          .ForEachAsync(
                              item =>

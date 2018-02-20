@@ -23,7 +23,7 @@ namespace Wikiled.YiScanner.Tests.Destinations
         [SetUp]
         public void SetUp()
         {
-            header = new VideoHeader(new HostInformation("Camera", IPAddress.Any), "test.mov");
+            header = new VideoHeader(new Host("Camera", IPAddress.Any), "test.mov");
             outPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Out");
             if (Directory.Exists(outPath))
             {

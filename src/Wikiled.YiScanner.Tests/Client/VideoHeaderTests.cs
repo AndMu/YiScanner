@@ -9,14 +9,14 @@ namespace Wikiled.YiScanner.Tests.Client
     [TestFixture]
     public class VideoHeaderTests
     {
-        private HostInformation cameraDescription;
+        private Host cameraDescription;
 
         private VideoHeader instance;
 
         [SetUp]
         public void Setup()
         {
-            cameraDescription = new HostInformation("Test", IPAddress.None);
+            cameraDescription = new Host("Test", IPAddress.None);
             instance = CreateVideoHeader();
         }
 

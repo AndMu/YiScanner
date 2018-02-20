@@ -16,9 +16,7 @@ namespace Wikiled.YiScanner.Client
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        private readonly HostInformation camera;
-
-        private readonly FtpConfig config;
+        private readonly HostTracking tracking;
 
         private readonly IDestination destination;
 
@@ -26,42 +24,36 @@ namespace Wikiled.YiScanner.Client
 
         private readonly IPredicate predicate;
 
-        private DateTime? lastScan;
-
         public FtpDownloader(
-            FtpConfig config,
-            HostInformation camera,
+            HostTracking tracking,
             IDestination destination,
             IPredicate predicate)
         {
-            Guard.NotNull(() => config, config);
-            Guard.NotNull(() => camera, camera);
+            Guard.NotNull(() => tracking, tracking);
             Guard.NotNull(() => destination, destination);
             Guard.NotNull(() => predicate, predicate);
-            maskRegex = FileMask.GenerateFitMask(config.FileMask);
+            maskRegex = FileMask.GenerateFitMask(tracking.Config.FileMask);
             log.Debug("Generated mask: {0}", maskRegex);
-            this.camera = camera;
+            this.tracking = tracking;
             this.destination = destination;
             this.predicate = predicate;
-            this.config = config;
         }
 
         public async Task<DateTime> Download()
         {
             // Get the object used to communicate with the server.  
-            using (var client = new FtpClient(camera.Address.ToString()))
+            using (var client = new FtpClient(tracking.Host.Address.ToString()))
             {
-                log.Info("Connecting: {0}", camera.Address);
+                log.Info("Connecting: {0}", tracking.Host.Address);
                 client.Credentials = new NetworkCredential(
-                    config.Login,
-                    config.Password);
+                    tracking.Config.Login,
+                    tracking.Config.Password);
                 client.Connect();
-                log.Info("Connected: {0}!", camera.Address);
-                await Retrieve(client, config.Path).ConfigureAwait(false);
+                log.Info("Connected: {0}!", tracking.Host.Address);
+                await Retrieve(client, tracking.Config.Path).ConfigureAwait(false);
             }
 
-            var now = DateTime.Now;
-            lastScan = now;
+            var now = tracking.Scanned();
             return now;
         }
 
@@ -70,10 +62,10 @@ namespace Wikiled.YiScanner.Client
             Stream stream = null;
             try
             {
-                var header = new VideoHeader(camera, item.FullName);
+                var header = new VideoHeader(tracking.Host, item.FullName);
                 if (!destination.IsDownloaded(header))
                 {
-                    log.Info("Downloading <{0}> from [{1}]", item.FullName, camera.Name);
+                    log.Info("Downloading <{0}> from [{1}]", item.FullName, tracking.Host.Name);
                     stream = await client.OpenReadAsync(item.FullName).ConfigureAwait(false);
                     await destination.Transfer(header, stream).ConfigureAwait(false);
                     var reply = await client.GetReplyAsync().ConfigureAwait(false);
@@ -85,7 +77,7 @@ namespace Wikiled.YiScanner.Client
                             reply.Message,
                             reply.Type,
                             reply.Code,
-                            camera.Name);
+                            tracking.Host.Name);
                     }
                     else
                     {
@@ -94,12 +86,12 @@ namespace Wikiled.YiScanner.Client
                             reply.ErrorMessage,
                             reply.Type,
                             reply.Code,
-                            camera.Name);
+                            tracking.Host.Name);
                     }
                 }
                 else
                 {
-                    log.Info("File is already downloaded - <{0}> {1}", item.FullName, camera.Name);
+                    log.Info("File is already downloaded - <{0}> {1}", item.FullName, tracking.Host.Name);
                 }
             }
             catch (Exception ex)
@@ -119,7 +111,7 @@ namespace Wikiled.YiScanner.Client
                 if (item.Type == FtpFileSystemObjectType.File)
                 {
                     if (maskRegex.IsMatch(item.FullName) &&
-                        predicate.CanDownload(lastScan, item.FullName, item.Modified))
+                        predicate.CanDownload(tracking.LastScanned, item.FullName, item.Modified))
                     {
                         if (item.Modified < DateTime.Now.AddMinutes(1))
                         {

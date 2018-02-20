@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using NLog;
 using Wikiled.Common.Arguments;
 using Wikiled.YiScanner.Client;
@@ -15,6 +17,8 @@ namespace Wikiled.YiScanner.Monitoring.Source
         private readonly IPredicate filePredicate;
 
         private readonly FtpConfig ftpConfig;
+
+        private readonly ConcurrentDictionary<IPAddress, HostTracking> trackingInformation = new ConcurrentDictionary<IPAddress, HostTracking>();
 
         public SourceFactory(FtpConfig ftpConfig, IScanConfig config, IPredicate filePredicate)
         {
@@ -51,11 +55,16 @@ namespace Wikiled.YiScanner.Monitoring.Source
             return destination;
         }
 
-        private IFtpDownloader ConstructDownloader(HostInformation host, IDestination destination)
+        private IFtpDownloader ConstructDownloader(Host host, IDestination destination)
         {
+            if (!trackingInformation.TryGetValue(host.Address, out var tracking))
+            {
+                tracking = new HostTracking(ftpConfig, host);
+                trackingInformation[host.Address] = tracking;
+            }
+
             return new FtpDownloader(
-                ftpConfig,
-                host,
+                tracking,
                 destination,
                 filePredicate);
         }

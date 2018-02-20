@@ -19,7 +19,7 @@ namespace Wikiled.YiScanner.Monitoring.Source
             this.config = config;
         }
 
-        public IEnumerable<HostInformation> GetHosts()
+        public IEnumerable<Host> GetHosts()
         {
             return GetHostsInternal();
         }
@@ -28,7 +28,7 @@ namespace Wikiled.YiScanner.Monitoring.Source
         {
         }
 
-        private IEnumerable<HostInformation> GetHostsInternal()
+        private IEnumerable<Host> GetHostsInternal()
         {
             if (string.IsNullOrEmpty(config.Cameras))
             {
@@ -52,7 +52,7 @@ namespace Wikiled.YiScanner.Monitoring.Source
 
             for (int i = 0; i < listOfCameras.Length; i++)
             {
-                yield return new HostInformation(listOfCameras[i], IPAddress.Parse(listOfHosts[i]));
+                yield return new Host(listOfCameras[i], IPAddress.Parse(listOfHosts[i]));
             }
         }
     }

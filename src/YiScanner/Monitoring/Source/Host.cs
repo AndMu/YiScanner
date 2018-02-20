@@ -2,9 +2,9 @@
 
 namespace Wikiled.YiScanner.Monitoring.Source
 {
-    public class HostInformation
+    public class Host
     {
-        public HostInformation(string name, IPAddress address, int port = 21)
+        public Host(string name, IPAddress address, int port = 21)
         {
             Name = name;
             Address = address;

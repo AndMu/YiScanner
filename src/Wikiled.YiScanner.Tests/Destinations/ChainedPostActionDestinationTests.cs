@@ -26,7 +26,7 @@ namespace Wikiled.YiScanner.Tests.Destinations
         [SetUp]
         public void SetUp()
         {
-            header = new VideoHeader(new HostInformation("Camera", IPAddress.Any), "test.mov");
+            header = new VideoHeader(new Host("Camera", IPAddress.Any), "test.mov");
             stream = new Mock<Stream>();
             mockDestination = new Mock<IDestination>();
             mockPostAction = new Mock<IPostAction>();

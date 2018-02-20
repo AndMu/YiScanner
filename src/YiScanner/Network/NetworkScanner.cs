@@ -19,7 +19,7 @@ namespace Wikiled.YiScanner.Network
             this.scheduler = scheduler;
         }
 
-        public IObservable<HostInformation> FindAddresses(string network, int port)
+        public IObservable<Host> FindAddresses(string network, int port)
         {
             IPNetwork ipNetwork = IPNetwork.Parse(network);
             return ipNetwork.ListIPAddress()
@@ -27,7 +27,7 @@ namespace Wikiled.YiScanner.Network
                    .SelectMany(item => Observable.Start(async () => (await ScanPort(item, port).ConfigureAwait(false), item), scheduler)
                                                  .Merge()
                                                  .Where(pair => pair.Item1)
-                                                 .Select(pair => new HostInformation(GetHostName(pair.Item2), pair.Item2)));
+                                                 .Select(pair => new Host(GetHostName(pair.Item2), pair.Item2)));
         }
 
         public async Task<bool> ScanPort(IPAddress address, int port)

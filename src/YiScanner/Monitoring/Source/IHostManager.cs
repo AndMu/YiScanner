@@ -5,6 +5,6 @@ namespace Wikiled.YiScanner.Monitoring.Source
 {
     public interface IHostManager : IDisposable
     {
-        IEnumerable<HostInformation> GetHosts();
+        IEnumerable<Host> GetHosts();
     }
 }
