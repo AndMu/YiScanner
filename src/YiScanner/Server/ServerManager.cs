@@ -2,14 +2,19 @@
 using System.IO;
 using FubarDev.FtpServer;
 using FubarDev.FtpServer.AccountManagement;
+using FubarDev.FtpServer.AccountManagement.Anonymous;
 using FubarDev.FtpServer.FileSystem.DotNet;
+using NLog;
 using Wikiled.Common.Arguments;
+using Wikiled.Common.Extensions;
 using Wikiled.YiScanner.Monitoring.Config;
 
 namespace Wikiled.YiScanner.Server
 {
     public class ServerManager : IServerManager
     {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         private readonly ServerConfig config;
 
         private FtpServer ftpServer;
@@ -22,12 +27,15 @@ namespace Wikiled.YiScanner.Server
 
         public void Start()
         {
-            var membershipProvider = new AnonymousMembershipProvider();
-            var provider = new DotNetFileSystemProvider(Path.Combine(Environment.CurrentDirectory, config.Path), false);
-            
+            log.Debug("Start");
+            var outPath = Path.Combine(Environment.CurrentDirectory, config.Path);
+            outPath.EnsureDirectoryExistence();
+            var membershipProvider = new AnonymousMembershipProvider(new NoValidation());
+            var provider = new DotNetFileSystemProvider(outPath, false);
+
             // Initialize the FTP server
             ftpServer = new FtpServer(provider, membershipProvider, "127.0.0.1");
-            
+
             // Start the FTP server
             ftpServer.Start();
         }

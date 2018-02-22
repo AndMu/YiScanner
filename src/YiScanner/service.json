@@ -19,8 +19,7 @@
     "FileMask": "*.mp4"
   },
 
-  "Server":
-  {
-    "Out":  "CCTV" 
+  "Server": {
+    "Path": "CCTV"
   }
 }

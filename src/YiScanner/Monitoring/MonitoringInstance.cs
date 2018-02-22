@@ -10,6 +10,7 @@ using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Monitoring.Config;
 using Wikiled.YiScanner.Monitoring.Source;
 using Wikiled.YiScanner.Network;
+using Wikiled.YiScanner.Server;
 
 namespace Wikiled.YiScanner.Monitoring
 {
@@ -28,6 +29,8 @@ namespace Wikiled.YiScanner.Monitoring
         private readonly ISourceFactory downloaderFactory;
 
         private IHostManager hostManager;
+
+        private ServerManager server;
 
         public MonitoringInstance(IScheduler scheduler, MonitoringConfig configuration, ISourceFactory downloaderFactory, IDeleteArchiving archiving)
         {
@@ -57,6 +60,13 @@ namespace Wikiled.YiScanner.Monitoring
                 connections.Add(archivingObservable);
             }
 
+            if (configuration.Server != null)
+            {
+                log.Info("Setting FTP server");
+                server = new ServerManager(configuration.Server);
+                server.Start();
+            }
+
             var observableMonitor = Observable.Empty<bool>()
                                               .Delay(TimeSpan.FromSeconds(configuration.Scan), scheduler)
                                               .Concat(Observable.FromAsync(Download, scheduler))
@@ -76,6 +86,7 @@ namespace Wikiled.YiScanner.Monitoring
                 connection.Dispose();
             }
 
+            server?.Dispose();
             connections.Clear();
         }
 

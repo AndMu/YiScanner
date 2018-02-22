@@ -29,6 +29,17 @@ namespace Wikiled.YiScanner
                 }
 
                 MonitoringConfig config = JsonConvert.DeserializeObject<MonitoringConfig>(File.ReadAllText(Path.Combine(directory, "service.json")));
+                if (config.Output == null)
+                {
+                    log.Error("Output not configured");
+                    return;
+                }
+
+                if (config.YiFtp == null)
+                {
+                    log.Error("Yi Ftp not configured");
+                    return;
+                }
 
                 log.Info("Starting {0} version utility...", Assembly.GetExecutingAssembly().GetName().Version);
                 List<Command> commandsList = new List<Command>();

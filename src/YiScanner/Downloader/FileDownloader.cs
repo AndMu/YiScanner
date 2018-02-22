@@ -38,6 +38,12 @@ namespace Wikiled.YiScanner.Downloader
         {
             var path = Path.Combine(Environment.CurrentDirectory, config.Path);
             log.Info("Checking files: {0}", path);
+            if (!Directory.Exists(path))
+            {
+                log.Error("Directory not found: {0}", path);
+                return DateTime.Now;
+            }
+
             foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
             {
                 if (predicate.CanDownload(lastScanned, file, File.GetLastWriteTime(file)))

@@ -7,6 +7,7 @@ using Wikiled.Common.Arguments;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Destinations;
+using Wikiled.YiScanner.Downloader;
 using Wikiled.YiScanner.Monitoring.Config;
 
 namespace Wikiled.YiScanner.Monitoring.Source
@@ -19,7 +20,11 @@ namespace Wikiled.YiScanner.Monitoring.Source
 
         private readonly MonitoringConfig config;
 
-        private readonly ConcurrentDictionary<IPAddress, HostTracking> trackingInformation = new ConcurrentDictionary<IPAddress, HostTracking>();
+        private readonly List<IDownloader> fixedDownloaders = new List<IDownloader>();
+
+        private readonly ConcurrentDictionary<IPAddress, IDownloader> trackingInformation = new ConcurrentDictionary<IPAddress, IDownloader>();
+
+        private readonly IDestination destination;
 
         public SourceFactory(MonitoringConfig config, IPredicate filePredicate)
         {
@@ -27,13 +32,17 @@ namespace Wikiled.YiScanner.Monitoring.Source
             Guard.NotNull(() => filePredicate, filePredicate);
             this.config = config;
             this.filePredicate = filePredicate;
+            destination = ConstructDestination();
+            if (config.Server != null)
+            {
+                fixedDownloaders.Add(new FileDownloader(config.Server, destination, filePredicate));
+            }
         }
 
         public IEnumerable<IDownloader> GetSources(IHostManager manager)
         {
-            var destination = ConstructDestination();
-            log.Info("Download from camera(s)");
-            return manager.GetHosts().Select(item => ConstructDownloader(item, destination));
+            log.Info("Downloading...");
+            return fixedDownloaders.Union(manager.GetHosts().Select(item => ConstructDownloader(item, destination)));
         }
 
         private IDestination ConstructDestination()
@@ -54,16 +63,14 @@ namespace Wikiled.YiScanner.Monitoring.Source
 
         private IDownloader ConstructDownloader(Host host, IDestination destination)
         {
-            if (!trackingInformation.TryGetValue(host.Address, out var tracking))
+            if (!trackingInformation.TryGetValue(host.Address, out var downloader))
             {
-                tracking = new HostTracking(config.YiFtp, host);
-                trackingInformation[host.Address] = tracking;
+                var tracking = new HostTracking(config.YiFtp, host);
+                downloader = new FtpDownloader(tracking, destination, filePredicate);
+                trackingInformation[host.Address] = downloader;
             }
 
-            return new FtpDownloader(
-                tracking,
-                destination,
-                filePredicate);
+            return downloader;
         }
     }
 }
