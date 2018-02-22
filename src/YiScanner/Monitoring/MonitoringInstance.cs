@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NLog;
 using Wikiled.Common.Arguments;
 using Wikiled.YiScanner.Client.Archive;
+using Wikiled.YiScanner.Monitoring.Config;
 using Wikiled.YiScanner.Monitoring.Source;
 using Wikiled.YiScanner.Network;
 
@@ -16,7 +17,7 @@ namespace Wikiled.YiScanner.Monitoring
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        private readonly IMonitoringConfig configuration;
+        private readonly MonitoringConfig configuration;
 
         private readonly IDeleteArchiving archiving;
 
@@ -28,7 +29,7 @@ namespace Wikiled.YiScanner.Monitoring
 
         private IHostManager hostManager;
 
-        public MonitoringInstance(IScheduler scheduler, IMonitoringConfig configuration, ISourceFactory downloaderFactory, IDeleteArchiving archiving)
+        public MonitoringInstance(IScheduler scheduler, MonitoringConfig configuration, ISourceFactory downloaderFactory, IDeleteArchiving archiving)
         {
             Guard.NotNull(() => configuration, configuration);
             Guard.NotNull(() => scheduler, scheduler);
@@ -42,9 +43,9 @@ namespace Wikiled.YiScanner.Monitoring
 
         public bool Start()
         {
-            hostManager = configuration.AutoDiscover == true ? 
+            hostManager = configuration.AutoDiscovery?.On == true ? 
                               new DynamicHostManager(configuration, new NetworkScanner(TaskPoolScheduler.Default), scheduler) : 
-                              (IHostManager)new StaticHostManager(configuration);
+                              (IHostManager)new StaticHostManager(configuration.Known);
             if (configuration.Archive.HasValue)
             {
                 var archivingObservable = Observable.Empty<bool>()
@@ -81,7 +82,7 @@ namespace Wikiled.YiScanner.Monitoring
         private async Task<bool> Archiving()
         {
             log.Info("Archiving...");
-            await archiving.Archive(configuration.Out, TimeSpan.FromDays(configuration.Archive.Value)).ConfigureAwait(false);
+            await archiving.Archive(configuration.Output.Out, TimeSpan.FromDays(configuration.Archive.Value)).ConfigureAwait(false);
             log.Info("Archiving. Done!");
             return true;
         }

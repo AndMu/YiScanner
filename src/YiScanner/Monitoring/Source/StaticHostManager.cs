@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
-using System.Reactive.Linq;
 using NLog;
 using Wikiled.Common.Arguments;
+using Wikiled.YiScanner.Monitoring.Config;
 
 namespace Wikiled.YiScanner.Monitoring.Source
 {
@@ -11,9 +10,9 @@ namespace Wikiled.YiScanner.Monitoring.Source
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        private readonly IScanConfig config;
+        private readonly PredefinedCameraConfig config;
 
-        public StaticHostManager(IScanConfig config)
+        public StaticHostManager(PredefinedCameraConfig config)
         {
             Guard.NotNull(() => config, config);
             this.config = config;

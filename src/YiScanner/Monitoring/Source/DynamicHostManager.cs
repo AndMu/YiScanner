@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using NLog;
 using Wikiled.Common.Arguments;
+using Wikiled.YiScanner.Monitoring.Config;
 using Wikiled.YiScanner.Network;
 
 namespace Wikiled.YiScanner.Monitoring.Source
@@ -22,9 +23,9 @@ namespace Wikiled.YiScanner.Monitoring.Source
 
         private readonly INetworkScanner scanner;
 
-        private readonly IScanConfig config;
+        private readonly MonitoringConfig config;
 
-        public DynamicHostManager(IScanConfig config, INetworkScanner scanner, IScheduler scheduler)
+        public DynamicHostManager(MonitoringConfig config, INetworkScanner scanner, IScheduler scheduler)
         {
             Guard.NotNull(() => config, config);
             Guard.NotNull(() => scanner, scanner);
@@ -49,7 +50,7 @@ namespace Wikiled.YiScanner.Monitoring.Source
         {
             log.Debug("ScanFtp");
             ConcurrentDictionary<IPAddress, Host> thisCycle = new ConcurrentDictionary<IPAddress, Host>();
-            await scanner.FindAddresses(config.NetworkMask, 21)
+            await scanner.FindAddresses(config.AutoDiscovery.NetworkMask, 21)
                          .ForEachAsync(
                              item =>
                                  {

@@ -12,7 +12,7 @@ using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Client
 {
-    public class FtpDownloader : IFtpDownloader
+    public class FtpDownloader : IDownloader
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
@@ -64,7 +64,7 @@ namespace Wikiled.YiScanner.Client
             {
                 var header = new VideoHeader(tracking.Host, item.FullName);
                 if (!destination.IsDownloaded(header))
-                {
+                {                    
                     log.Info("Downloading <{0}> from [{1}]", item.FullName, tracking.Host.Name);
                     stream = await client.OpenReadAsync(item.FullName).ConfigureAwait(false);
                     await destination.Transfer(header, stream).ConfigureAwait(false);

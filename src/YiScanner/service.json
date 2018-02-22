@@ -1,10 +1,26 @@
 ﻿{
   "Scan": 30,
-  "AutoDiscover": true,
-  "NetworkMask": "192.168.0.0/255.255.255.0",
-  "Compress": false,
+  "Output": {
+    "Compress": false,
+    "Images": true,
+    "Out": "D:/Cloud/GoogleUni/Camera/Monitor"
+  },
   "Archive": 2,
-  "Images": true,
-  "Out": "D:/Cloud/GoogleUni/Camera/Monitor",
-  "Action": null
+  "Action": null,
+  "AutoDiscovery": {
+    "On": true,
+    "NetworkMask": "192.168.0.0/255.255.255.0"
+  },
+
+  "YiFtp": {
+    "Path": "/tmp/sd/record/",
+    "Password": "",
+    "Login": "root",
+    "FileMask": "*.mp4"
+  },
+
+  "Server":
+  {
+    "Out":  "CCTV" 
+  }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using Wikiled.Common.Arguments;
 using Wikiled.YiScanner.Client;
+using Wikiled.YiScanner.Monitoring.Config;
 
 namespace Wikiled.YiScanner.Monitoring.Source
 {

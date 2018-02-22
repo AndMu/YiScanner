@@ -5,6 +5,6 @@ namespace Wikiled.YiScanner.Monitoring.Source
 {
     public interface ISourceFactory
     {
-        IEnumerable<IFtpDownloader> GetSources(IHostManager hosts);
+        IEnumerable<IDownloader> GetSources(IHostManager hosts);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Wikiled.YiScanner.Client
+﻿namespace Wikiled.YiScanner.Monitoring.Config
 {
     public class FtpConfig
     {

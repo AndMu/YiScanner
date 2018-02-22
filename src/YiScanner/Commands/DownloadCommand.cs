@@ -8,6 +8,7 @@ using NLog;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Client.Predicates;
+using Wikiled.YiScanner.Monitoring.Config;
 using Wikiled.YiScanner.Monitoring.Source;
 using Wikiled.YiScanner.Network;
 
@@ -21,8 +22,8 @@ namespace Wikiled.YiScanner.Commands
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        public DownloadCommand(FtpConfig ftpConfig)
-            : base(ftpConfig)
+        public DownloadCommand(MonitoringConfig config)
+            : base(config)
         {
         }
 
@@ -34,8 +35,8 @@ namespace Wikiled.YiScanner.Commands
         protected override void ProcessFtp(ISourceFactory factory)
         {
             using (var hostManager = AutoDiscover == true ? 
-                                         new DynamicHostManager(this, new NetworkScanner(TaskPoolScheduler.Default), TaskPoolScheduler.Default) 
-                                         : (IHostManager)new StaticHostManager(this))
+                                         new DynamicHostManager(Config, new NetworkScanner(TaskPoolScheduler.Default), TaskPoolScheduler.Default) 
+                                         : (IHostManager)new StaticHostManager(Config.Known))
             {
                 var downloaders = factory.GetSources(hostManager);
                 var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download());

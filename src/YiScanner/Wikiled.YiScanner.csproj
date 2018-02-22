@@ -17,8 +17,12 @@
   <ItemGroup>
     <PackageReference Include="Accord.Video.FFMPEG" Version="3.8.0" />
     <PackageReference Include="FluentFTP" Version="19.1.2" />
+    <PackageReference Include="FubarDev.FtpServer" Version="1.3.6" />
+    <PackageReference Include="FubarDev.FtpServer.AccountManagement" Version="1.3.6" />
+    <PackageReference Include="FubarDev.FtpServer.FileSystem" Version="1.3.6" />
+    <PackageReference Include="FubarDev.FtpServer.FileSystem.DotNet" Version="1.3.6" />
     <PackageReference Include="IPNetwork2" Version="2.1.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
     <PackageReference Include="NLog" Version="4.4.12" />
     <PackageReference Include="System.Console" Version="4.3.0" />
     <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />
@@ -35,9 +39,6 @@
 
   <ItemGroup>
     <None Update="service.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="nlog.config">

@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Monitoring;
+using Wikiled.YiScanner.Monitoring.Config;
 using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Tests.Monitoring
@@ -18,7 +19,7 @@ namespace Wikiled.YiScanner.Tests.Monitoring
 
         private Mock<ISourceFactory> mockDestinationFactory;
 
-        private Mock<IFtpDownloader> ftpDownloader;
+        private Mock<IDownloader> ftpDownloader;
 
         private Mock<IDeleteArchiving> archiving;
 
@@ -34,7 +35,7 @@ namespace Wikiled.YiScanner.Tests.Monitoring
             monitoringConfig.Scan = 1;
             archiving = new Mock<IDeleteArchiving>();
             mockDestinationFactory = new Mock<ISourceFactory>();
-            ftpDownloader = new Mock<IFtpDownloader>();
+            ftpDownloader = new Mock<IDownloader>();
 
             mockDestinationFactory.Setup(item => item.GetSources(It.IsAny<IHostManager>()))
                                   .Returns(new[] { ftpDownloader.Object });

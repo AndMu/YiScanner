@@ -1,11 +1,10 @@
-﻿using System.IO;
-using System.Reactive.Concurrency;
-using Newtonsoft.Json;
+﻿using System.Reactive.Concurrency;
 using NLog;
 using Topshelf;
-using Wikiled.YiScanner.Client;
+using Wikiled.Common.Arguments;
 using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Client.Predicates;
+using Wikiled.YiScanner.Monitoring.Config;
 using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Monitoring
@@ -14,18 +13,11 @@ namespace Wikiled.YiScanner.Monitoring
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        public void StartService(string directory, FtpConfig ftpConfig)
+        public void StartService(MonitoringConfig config)
         {
-            var serviceName = Path.Combine(directory, "service.json");
-            if (!File.Exists(serviceName))
-            {
-                log.Error($"Configuration file {serviceName} not found");
-                return;
-            }
-
-            MonitoringConfig config = JsonConvert.DeserializeObject<MonitoringConfig>(File.ReadAllText(serviceName));
-            var predicate = config.All ? new NullPredicate() : (IPredicate)new NewFilesPredicate();
-            SourceFactory factory = new SourceFactory(ftpConfig, config, predicate);
+            Guard.NotNull(() => config, config);
+            var predicate = config.Output.All ? new NullPredicate() : (IPredicate)new NewFilesPredicate();
+            SourceFactory factory = new SourceFactory(config, predicate);
             HostFactory.Run(
                 x =>
                 {

@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Monitoring;
+using Wikiled.YiScanner.Monitoring.Config;
 using Wikiled.YiScanner.Monitoring.Source;
 
 namespace Wikiled.YiScanner.Tests.Monitoring.Source
@@ -41,7 +42,7 @@ namespace Wikiled.YiScanner.Tests.Monitoring.Source
             var result = instance.GetSources(manager).ToArray();
             Assert.AreEqual(0, result.Length);
 
-            scanConfig.Cameras = "Test";
+            scanConfig.Known = "Test";
             result = instance.GetSources(manager).ToArray();
             Assert.AreEqual(0, result.Length);
 

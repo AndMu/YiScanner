@@ -7,6 +7,7 @@ using Wikiled.Common.Arguments;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Destinations;
+using Wikiled.YiScanner.Monitoring.Config;
 
 namespace Wikiled.YiScanner.Monitoring.Source
 {
@@ -16,23 +17,19 @@ namespace Wikiled.YiScanner.Monitoring.Source
 
         private readonly IPredicate filePredicate;
 
-        private readonly FtpConfig ftpConfig;
+        private readonly MonitoringConfig config;
 
         private readonly ConcurrentDictionary<IPAddress, HostTracking> trackingInformation = new ConcurrentDictionary<IPAddress, HostTracking>();
 
-        public SourceFactory(FtpConfig ftpConfig, IScanConfig config, IPredicate filePredicate)
+        public SourceFactory(MonitoringConfig config, IPredicate filePredicate)
         {
-            Guard.NotNull(() => ftpConfig, ftpConfig);
             Guard.NotNull(() => config, config);
             Guard.NotNull(() => filePredicate, filePredicate);
-            this.ftpConfig = ftpConfig;
-            Config = config;
+            this.config = config;
             this.filePredicate = filePredicate;
         }
 
-        public IScanConfig Config { get; }
-
-        public IEnumerable<IFtpDownloader> GetSources(IHostManager manager)
+        public IEnumerable<IDownloader> GetSources(IHostManager manager)
         {
             var destination = ConstructDestination();
             log.Info("Download from camera(s)");
@@ -41,25 +38,25 @@ namespace Wikiled.YiScanner.Monitoring.Source
 
         private IDestination ConstructDestination()
         {
-            IDestination destination = Config.Images ? (IDestination)new PictureFileDestination(Config.Out) : new FileDestination(Config.Out);
-            if (Config.Compress)
+            IDestination destination = config.Output.Images ? (IDestination)new PictureFileDestination(config.Output.Out) : new FileDestination(config.Output.Out);
+            if (config.Output.Compress)
             {
                 destination = ChainedPriorActionDestination.CreateCompressed(destination);
             }
 
-            if (Config.Action != null)
+            if (config.Action != null)
             {
-                destination = ChainedPostActionDestination.CreateAction(destination, Config.Action);
+                destination = ChainedPostActionDestination.CreateAction(destination, config.Action);
             }
 
             return destination;
         }
 
-        private IFtpDownloader ConstructDownloader(Host host, IDestination destination)
+        private IDownloader ConstructDownloader(Host host, IDestination destination)
         {
             if (!trackingInformation.TryGetValue(host.Address, out var tracking))
             {
-                tracking = new HostTracking(ftpConfig, host);
+                tracking = new HostTracking(config.YiFtp, host);
                 trackingInformation[host.Address] = tracking;
             }
 
