@@ -33,6 +33,8 @@ namespace Wikiled.YiScanner.Tests.Monitoring
             scheduler = new TestScheduler();
             monitoringConfig = new MonitoringConfig();
             monitoringConfig.Scan = 1;
+            monitoringConfig.Known = new PredefinedCameraConfig();
+            monitoringConfig.Output = new OutputConfig();
             archiving = new Mock<IDeleteArchiving>();
             mockDestinationFactory = new Mock<ISourceFactory>();
             ftpDownloader = new Mock<IDownloader>();

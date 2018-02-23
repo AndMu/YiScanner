@@ -46,9 +46,18 @@ namespace Wikiled.YiScanner.Downloader
 
             foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
             {
-                if (predicate.CanDownload(lastScanned, file, File.GetLastWriteTime(file)))
+                try
                 {
-                    await ProcessFile(file).ConfigureAwait(false);
+                    if (predicate.CanDownload(lastScanned, file, File.GetLastWriteTime(file)))
+                    {
+                        await ProcessFile(file).ConfigureAwait(false);
+                    }
+
+                    File.Delete(file);
+                }
+                catch (Exception ex)
+                {
+                    log.Error(ex);
                 }
             }
 

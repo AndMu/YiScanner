@@ -21,7 +21,7 @@ namespace Wikiled.YiScanner.Network
         {
             Guard.NotNull(() => scheduler, scheduler);
             this.scheduler = scheduler;
-            localAddresses = GetIPAddress().ToLookup(item => item);
+            localAddresses = GetLocalIPAddress().ToLookup(item => item);
         }
 
         public IObservable<Host> FindAddresses(string network, int port)
@@ -53,7 +53,7 @@ namespace Wikiled.YiScanner.Network
             }
         }
 
-        private static IEnumerable<IPAddress> GetIPAddress()
+        public IEnumerable<IPAddress> GetLocalIPAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
             foreach (IPAddress ip in host.AddressList)

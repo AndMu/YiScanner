@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -10,6 +11,7 @@ using Wikiled.Console.Arguments;
 using Wikiled.YiScanner.Commands;
 using Wikiled.YiScanner.Monitoring;
 using Wikiled.YiScanner.Monitoring.Config;
+using Wikiled.YiScanner.Network;
 
 namespace Wikiled.YiScanner
 {
@@ -29,19 +31,19 @@ namespace Wikiled.YiScanner
                 }
 
                 MonitoringConfig config = JsonConvert.DeserializeObject<MonitoringConfig>(File.ReadAllText(Path.Combine(directory, "service.json")));
-                if (config.Output == null)
+                if (!config.Validate())
                 {
-                    log.Error("Output not configured");
+                    log.Error("Invalid configuration");
                     return;
                 }
 
-                if (config.YiFtp == null)
-                {
-                    log.Error("Yi Ftp not configured");
-                    return;
-                }
-
+                NetworkScanner scanner = new NetworkScanner(TaskPoolScheduler.Default);
                 log.Info("Starting {0} version utility...", Assembly.GetExecutingAssembly().GetName().Version);
+                foreach (var address in scanner.GetLocalIPAddress())
+                {
+                    log.Info("Starting on [{0}]", address);
+                }
+                
                 List<Command> commandsList = new List<Command>();
                 commandsList.Add(new MonitorCommand(config));
                 commandsList.Add(new DownloadCommand(config));
@@ -64,7 +66,5 @@ namespace Wikiled.YiScanner
                 log.Error(ex);
             }
         }
-
-       
     }
 }

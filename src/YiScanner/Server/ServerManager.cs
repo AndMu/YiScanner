@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using FubarDev.FtpServer;
 using FubarDev.FtpServer.AccountManagement;
 using FubarDev.FtpServer.AccountManagement.Anonymous;
@@ -25,6 +26,11 @@ namespace Wikiled.YiScanner.Server
             this.config = config;
         }
 
+        public void Dispose()
+        {
+            ftpServer?.Dispose();
+        }
+
         public void Start()
         {
             log.Debug("Start");
@@ -34,15 +40,10 @@ namespace Wikiled.YiScanner.Server
             var provider = new DotNetFileSystemProvider(outPath, false);
 
             // Initialize the FTP server
-            ftpServer = new FtpServer(provider, membershipProvider, "127.0.0.1");
+            ftpServer = new FtpServer(provider, membershipProvider, "127.0.0.1", config.Port, new AssemblyFtpCommandHandlerFactory(typeof(FtpServer).GetTypeInfo().Assembly));
 
             // Start the FTP server
             ftpServer.Start();
-        }
-
-        public void Dispose()
-        {
-            ftpServer?.Dispose();
         }
     }
 }

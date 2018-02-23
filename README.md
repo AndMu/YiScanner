@@ -1,4 +1,7 @@
-# Yi Camera FTP Scanner and Video Clips/Images Downloader
+# Yi Camera FTP Scanner and Video Clips/Images Downloader with embedded FTP Server for other Cameras
+
+- **Automatic** network scanning for YI Cameras
+- **Embedded** FTP server for other cameras
 
 The application supports two modes - arguments explicitly specified in command prompt and configuration based.
 It can also run as Windows service.
@@ -6,29 +9,57 @@ It can also run as Windows service.
 [![GitHub release](https://img.shields.io/github/release/AndMu/YiScanner.svg)](https://github.com/AndMu/YiScanner/releases)
 
 ## Configuration via service.json
-In this mode, application will monitor designated cameras
 
 ```
-"Scan": 30,
-"Cameras": "1080i,720p",
-"Hosts": "192.168.0.103,192.168.0.129",
-"Compress": false,
-"Archive": 2,
-"Images": false,
-"All": false,
-"Out": "D:/Cloud/Camera/Monitor",
-"Action": null,    
+{
+  "Scan": 30,
+  "Archive": 2,
+  "Output": {
+    "Compress": false,
+    "Images": true,
+    "Out": "D:/Cloud/GoogleUni/Camera/Monitor"
+  },  
+  "Action": null,
+  "AutoDiscovery": {
+    "On": true,
+    "NetworkMask": "192.168.0.0/255.255.255.0"
+  },
+
+  "YiFtp": {
+    "Path": "/tmp/sd/record/",
+    "Password": "",
+    "Login": "root",
+    "FileMask": "*.mp4"
+  },
+
+  "Server": {
+    "Path": "CCTV",
+	"Port": 21	
+  }
+} 
 ```
 
-## Settings:
-- **Cameras** - list of cameras
-- **Hosts** - list of camera ips. 
-- **Compress** - do you want to compress retrieved video/images
-- **Out** - location of downloaded files
 - **Scan** - frequency of FTP scan (in seconds)
-- **Archive** - delete previously downloaded old files. Number specifies how many days you want to keep history
-- **Images** - Do you want to retrieve video as images
-- **Action** - Execute action on each retrieved image
+- **Archive** - delete previously downloaded old files. Number specifies how many days you want to keep history.
+
+## Output
+
+- **Compress** - do you want to compress files
+- **Out** - location of downloaded files
+- **Archive** - delete previously downloaded old files. Number specifies how many days you want to keep history.
+
+## Yi FTP Details
+
+- **Path** - Where images are stored
+- **Login** - Login
+- **FileMask** - Files to download
+- **Password** - Password
+
+## Embedded FTP
+
+- **Path** - Local sub-folder where images will be stored
+- **Port** - Server port
+
 
 ## Actions on image
 
@@ -71,6 +102,3 @@ Options:
 - **Scan** - frequency of FTP scan (in seconds)
 - **Archive** - delete previously downloaded old files. Number specifies how many days you want to keep history.
 
-
-# FTP configuration 
-FTP configuration can be modified in file **appsettings.json**
