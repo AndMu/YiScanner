@@ -2,7 +2,7 @@
   "Scan": 30,
   "Output": {
     "Compress": false,
-    "Images": true,
+    "Images": false,
     "Out": "D:/Cloud/GoogleUni/Camera/Monitor"
   },
   "Archive": 2,

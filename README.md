@@ -16,7 +16,7 @@ It can also run as Windows service.
   "Archive": 2,
   "Output": {
     "Compress": false,
-    "Images": true,
+    "Images": false,
     "Out": "D:/Cloud/GoogleUni/Camera/Monitor"
   },  
   "Action": null,
@@ -46,6 +46,7 @@ It can also run as Windows service.
 
 - **Compress** - do you want to compress files
 - **Out** - location of downloaded files
+- **Images** - Download as a snapshot or video
 - **Archive** - delete previously downloaded old files. Number specifies how many days you want to keep history.
 
 ## Yi FTP Details
@@ -72,8 +73,17 @@ If you want some action to be executed on each retrieved image:
     }
 ```
 
-%1 will be replaced by file name. 
+## Manual YI Camera setup
 
+"Known":{
+    "Cameras": "1080i",
+    "Hosts": "192.168.0.22"
+    }
+
+If you don't want automatic camera discovery, you can predefine list of cameras.
+
+- **Cameras** - list of cameras
+- **Hosts** - list of hosts. 
 
 ## Install as Windows service
 ```
