@@ -33,14 +33,15 @@ namespace Wikiled.YiScanner.Server
 
         public void Start()
         {
-            log.Debug("Start");
             var outPath = Path.Combine(Environment.CurrentDirectory, config.Path);
             outPath.EnsureDirectoryExistence();
+            log.Debug("Start FTP server: [{0}]", outPath);
             var membershipProvider = new AnonymousMembershipProvider(new NoValidation());
             var provider = new DotNetFileSystemProvider(outPath, false);
 
             // Initialize the FTP server
             ftpServer = new FtpServer(provider, membershipProvider, "127.0.0.1", config.Port, new AssemblyFtpCommandHandlerFactory(typeof(FtpServer).GetTypeInfo().Assembly));
+            ftpServer.LogManager = new FtpLogManager();
 
             // Start the FTP server
             ftpServer.Start();

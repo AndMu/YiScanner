@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using NLog;
@@ -59,6 +60,23 @@ namespace Wikiled.YiScanner.Downloader
                 {
                     log.Error(ex);
                 }
+            }
+
+            try
+            {
+                var directories = Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories);
+                foreach (var directory in directories)
+                {
+                    if (!Directory.EnumerateFileSystemEntries(directory).Any())
+                    {
+                        log.Info("Removing empty: {0}", directory);
+                        Directory.Delete(directory);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
             }
 
             log.Info("Completed: {0}", path);

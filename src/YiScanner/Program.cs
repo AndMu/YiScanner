@@ -41,7 +41,7 @@ namespace Wikiled.YiScanner
                 log.Info("Starting {0} version utility...", Assembly.GetExecutingAssembly().GetName().Version);
                 foreach (var address in scanner.GetLocalIPAddress())
                 {
-                    log.Info("Starting on [{0}]", address);
+                    log.Info("Starting on local IP: [{0}]", address);
                 }
                 
                 List<Command> commandsList = new List<Command>();
