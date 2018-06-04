@@ -13,6 +13,7 @@ It can also run as Windows service.
 ```
 {
   "Scan": 30,
+  "Timeout": 1200,
   "Archive": 2,
   "Output": {
     "Compress": false,
@@ -40,6 +41,7 @@ It can also run as Windows service.
 ```
 
 - **Scan** - frequency of FTP scan (in seconds)
+- **Timeout** - FTP scan Timeout(hard) (in seconds)
 - **Archive** - delete previously downloaded old files. Number specifies how many days you want to keep history.
 
 ## Output

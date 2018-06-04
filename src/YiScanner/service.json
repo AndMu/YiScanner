@@ -1,5 +1,6 @@
 ﻿{
   "Scan": 30,
+  "Timeout": 1200,
   "Output": {
     "Compress": false,
     "Images": false,
