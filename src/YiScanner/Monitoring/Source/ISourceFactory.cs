@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Wikiled.YiScanner.Client;
+using Wikiled.YiScanner.Downloader;
 
 namespace Wikiled.YiScanner.Monitoring.Source
 {

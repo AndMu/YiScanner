@@ -2,10 +2,9 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Concurrency;
-using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NLog;
-using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Monitoring.Config;
@@ -38,8 +37,15 @@ namespace Wikiled.YiScanner.Commands
                                          new DynamicHostManager(Config, new NetworkScanner(TaskPoolScheduler.Default), TaskPoolScheduler.Default) 
                                          : (IHostManager)new StaticHostManager(Config.Known))
             {
+                CancellationToken token = CancellationToken.None;
+                if (Config.TimeOut.HasValue)
+                {
+                    CancellationTokenSource tokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(Config.TimeOut.Value));
+                    token = tokenSource.Token;
+                }
+
                 var downloaders = factory.GetSources(hostManager);
-                var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download());
+                var tasks = downloaders.Select(ftpDownloader => ftpDownloader.Download(token));
                 
                 var archiving = new DeleteArchiving();
                 if (Archive.HasValue)
@@ -48,7 +54,7 @@ namespace Wikiled.YiScanner.Commands
                     archiving.Archive(Out, TimeSpan.FromDays(Archive.Value));
                 }
 
-                Task.WhenAll(tasks).Wait();
+                Task.WhenAll(tasks).Wait(token);
             }
         }
     }

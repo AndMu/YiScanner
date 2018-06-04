@@ -9,6 +9,8 @@ namespace Wikiled.YiScanner.Monitoring.Config
 
         public int Scan { get; set; }
 
+        public int? TimeOut { get; set; }
+
         public PredefinedCameraConfig Known { get; set; }
 
         public OutputConfig Output { get; set; }

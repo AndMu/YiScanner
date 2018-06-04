@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 using Wikiled.Common.Arguments;
@@ -106,12 +107,30 @@ namespace Wikiled.YiScanner.Monitoring
                 var sources  = downloaderFactory.GetSources(hostManager).ToArray();
                 List<Task> tasks = new List<Task>();
                 log.Info("Downloading from {0} cameras", sources.Length);
+                CancellationTokenSource token = new CancellationTokenSource();
+
                 foreach (var item in sources)
                 {
-                    tasks.Add(item.Download());
+                    tasks.Add(item.Download(token.Token));
+                }
+
+                if (configuration.TimeOut.HasValue)
+                {
+                    var time = TimeSpan.FromSeconds(configuration.TimeOut.Value);
+                    token.CancelAfter(time);
+                    var timeoutTask = Task.Delay(time, token.Token);
+                    await Task.WhenAny(Task.WhenAll(tasks), timeoutTask).ConfigureAwait(false);
+                    if (timeoutTask.IsCompleted)
+                    {
+                        log.Error("FTP processing Timout!");
+                        return false;
+                    }
+                }
+                else
+                {
+                    await Task.WhenAll(tasks).ConfigureAwait(false);
                 }
                 
-                await Task.WhenAll(tasks).ConfigureAwait(false);
                 log.Info("Done!");
                 return true;
             }

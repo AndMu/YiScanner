@@ -1,11 +1,9 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using NLog;
 using Wikiled.Common.Arguments;
 using Wikiled.Common.Extensions;
-using Wikiled.Core.Utility.Extensions;
 
 namespace Wikiled.YiScanner.Destinations
 {

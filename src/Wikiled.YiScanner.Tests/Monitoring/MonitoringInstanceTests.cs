@@ -1,11 +1,14 @@
 using System;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Reactive.Testing;
 using Moq;
 using NUnit.Framework;
 using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Archive;
+using Wikiled.YiScanner.Downloader;
 using Wikiled.YiScanner.Monitoring;
 using Wikiled.YiScanner.Monitoring.Config;
 using Wikiled.YiScanner.Monitoring.Source;
@@ -49,13 +52,13 @@ namespace Wikiled.YiScanner.Tests.Monitoring
         {
             instance.Start();
             scheduler.AdvanceBy(TimeSpan.FromSeconds(11).Ticks);
-            ftpDownloader.Verify(item => item.Download(), Times.Exactly(10));
+            ftpDownloader.Verify(item => item.Download(It.IsAny<CancellationToken>()), Times.Exactly(10));
         }
 
         [Test]
         public void DownloadSlow()
         {
-            ftpDownloader.Setup(item => item.Download())
+            ftpDownloader.Setup(item => item.Download(It.IsAny<CancellationToken>()))
                          .Returns(
                              () =>
                                  Observable.Return(DateTime.Now)
@@ -63,7 +66,7 @@ namespace Wikiled.YiScanner.Tests.Monitoring
                                            .ToTask());
             instance.Start();
             scheduler.AdvanceBy(TimeSpan.FromSeconds(10).Ticks);
-            ftpDownloader.Verify(item => item.Download(), Times.Exactly(3));
+            ftpDownloader.Verify(item => item.Download(It.IsAny<CancellationToken>()), Times.Exactly(3));
         }
 
         [Test]

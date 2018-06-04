@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 using Wikiled.Common.Arguments;
@@ -35,7 +36,7 @@ namespace Wikiled.YiScanner.Downloader
             this.destination = destination;
         }
 
-        public async Task<DateTime> Download()
+        public async Task<DateTime> Download(CancellationToken cancellation)
         {
             var path = Path.Combine(Environment.CurrentDirectory, config.Path);
             log.Info("Checking files: {0}", path);
@@ -49,6 +50,7 @@ namespace Wikiled.YiScanner.Downloader
             {
                 try
                 {
+                    cancellation.ThrowIfCancellationRequested();
                     if (predicate.CanDownload(lastScanned, file, File.GetLastWriteTime(file)))
                     {
                         await ProcessFile(file).ConfigureAwait(false);
@@ -67,6 +69,7 @@ namespace Wikiled.YiScanner.Downloader
                 var directories = Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories);
                 foreach (var directory in directories)
                 {
+                    cancellation.ThrowIfCancellationRequested();
                     if (!Directory.EnumerateFileSystemEntries(directory).Any())
                     {
                         log.Info("Removing empty: {0}", directory);

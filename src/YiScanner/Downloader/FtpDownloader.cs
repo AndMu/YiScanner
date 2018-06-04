@@ -2,15 +2,17 @@
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentFTP;
 using NLog;
 using Wikiled.Common.Arguments;
+using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Destinations;
 using Wikiled.YiScanner.Monitoring.Source;
 
-namespace Wikiled.YiScanner.Client
+namespace Wikiled.YiScanner.Downloader
 {
     public class FtpDownloader : IDownloader
     {
@@ -39,7 +41,7 @@ namespace Wikiled.YiScanner.Client
             this.predicate = predicate;
         }
 
-        public async Task<DateTime> Download()
+        public async Task<DateTime> Download(CancellationToken cancellation)
         {
             // Get the object used to communicate with the server.  
             using (var client = new FtpClient(tracking.Host.Address.ToString()))
@@ -50,7 +52,7 @@ namespace Wikiled.YiScanner.Client
                     tracking.Config.Password);
                 client.Connect();
                 log.Info("Connected: {0}!", tracking.Host.Address);
-                await Retrieve(client, tracking.Config.Path).ConfigureAwait(false);
+                await Retrieve(client, tracking.Config.Path, cancellation).ConfigureAwait(false);
             }
 
             var now = tracking.Scanned();
@@ -104,10 +106,11 @@ namespace Wikiled.YiScanner.Client
             }
         }
 
-        private async Task Retrieve(FtpClient client, string path)
+        private async Task Retrieve(FtpClient client, string path, CancellationToken cancellation)
         {
             foreach (FtpListItem item in client.GetListing(path))
             {
+                cancellation.ThrowIfCancellationRequested();
                 if (item.Type == FtpFileSystemObjectType.File)
                 {
                     if (maskRegex.IsMatch(item.FullName) &&
@@ -126,7 +129,7 @@ namespace Wikiled.YiScanner.Client
                 }
                 else if (item.Type == FtpFileSystemObjectType.Directory)
                 {
-                    await Retrieve(client, item.FullName).ConfigureAwait(false);
+                    await Retrieve(client, item.FullName, cancellation).ConfigureAwait(false);
                 }
             }
         }
