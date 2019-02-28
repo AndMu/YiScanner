@@ -70,7 +70,7 @@ namespace Wikiled.YiScanner.Downloader
                     log.Info("Downloading <{0}> from [{1}]", item.FullName, tracking.Host.Name);
                     stream = await client.OpenReadAsync(item.FullName).ConfigureAwait(false);
                     await destination.Transfer(header, stream).ConfigureAwait(false);
-                    var reply = await client.GetReplyAsync().ConfigureAwait(false);
+                    var reply = await client.GetReplyAsync(CancellationToken.None).ConfigureAwait(false);
                     if (reply.Success)
                     {
                         log.Info(
