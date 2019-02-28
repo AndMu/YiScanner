@@ -20,127 +20,77 @@ namespace Wikiled.YiScanner.Commands
         }
 
         [Description("Archive video after days")]
-        public int? Archive { get => Config.Archive; set => Config.Archive = value; }
+        public int? Archive { get; set; }
 
         [Description("Auto discover cameras")]
-        public bool? AutoDiscover
-        {
-            get => Config.AutoDiscovery?.On;
-            set
-            {
-                if (Config.AutoDiscovery == null)
-                {
-                    Config.AutoDiscovery = new AutoDiscoveryConfig();
-                }
-
-                Config.AutoDiscovery.On = value;
-            }
-        }
+        public bool? AutoDiscover { get; set; }
 
         [Required]
         [Description("List of camera names")]
-        public string Cameras
-        {
-            get => Config.Known?.Cameras;
-            set
-            {
-                if (Config.Known == null)
-                {
-                    Config.Known = new PredefinedCameraConfig();
-                }
-
-                Config.Known.Cameras = value;
-            }
-        }
+        public string Cameras { get; set; }
 
         [Description("Compress video files")]
-        public bool? Compress
-        {
-            get => Config.Output?.Compress;
-            set
-            {
-                if (Config.Output == null)
-                {
-                    Config.Output = new OutputConfig();
-                }
-
-                Config.Output.Compress = value.Value;
-            }
-        }
+        public bool? Compress { get; set; }
 
         public MonitoringConfig Config { get; }
 
         [Required]
         [Description("List of camera hosts")]
-        public string Hosts
-        {
-            get => Config.Known?.Hosts;
-            set
-            {
-                if (Config.Known == null)
-                {
-                    Config.Known = new PredefinedCameraConfig();
-                }
-
-                Config.Known.Hosts = value;
-            }
-        }
-
+        public string Hosts { get; set; }
+        
         [Description("Do you want to save it as image")]
-        public bool? Images
-        {
-            get => Config.Output?.Images;
-            set
-            {
-                if (Config.Output == null)
-                {
-                    Config.Output = new OutputConfig();
-                }
-
-                Config.Output.Images = value.Value;
-            }
-        }
+        public bool? Images { get; set; }
 
         [Description("Discovery network mask")]
-        public string NetworkMask
-        {
-            get => Config.AutoDiscovery?.NetworkMask;
-            set
-            {
-                if (Config.AutoDiscovery == null)
-                {
-                    Config.AutoDiscovery = new AutoDiscoveryConfig();
-                }
-
-                Config.AutoDiscovery.NetworkMask = value;
-            }
-        }
-
+        public string NetworkMask { get; set; }
+        
         [Required]
         [Description("File destination")]
-        public string Out
-        {
-            get => Config.Output?.Out;
-            set
-            {
-                if (Config.Output == null)
-                {
-                    Config.Output = new OutputConfig();
-                }
-
-                Config.Output.Out = value;
-            }
-        }
-
+        public string Out { get; set; }
+        
         public override void Execute()
         {
             log.Info("Starting camera download...");
-            SourceFactory factory = new SourceFactory(Config, ConstructPredicate());
+            SetConfig();
+            var factory = new SourceFactory(Config, ConstructPredicate());
             ProcessFtp(factory);
         }
 
         protected abstract IPredicate ConstructPredicate();
 
         protected abstract void ProcessFtp(ISourceFactory downloaders);
+
+        private void SetConfig()
+        {
+            log.Info("Initializing config");
+            Config.Archive = Archive;
+            if (Config.AutoDiscovery == null)
+            {
+                Config.AutoDiscovery = new AutoDiscoveryConfig();
+            }
+
+            Config.AutoDiscovery.On = AutoDiscover;
+            Config.AutoDiscovery.NetworkMask = NetworkMask;
+
+            if (Config.Known == null)
+            {
+                Config.Known = new PredefinedCameraConfig();
+            }
+
+            Config.Known.Cameras = Cameras;
+            Config.Known.Hosts = Hosts;
+
+            if (Config.Output == null)
+            {
+                Config.Output = new OutputConfig();
+            }
+
+            Config.Output.Compress = Compress == true;
+            Config.Output.Out = Out;
+            Config.Output.Images = Images == true;
+
+            // ignore FTP Server
+            Config.Server = null;
+        }
     }
 }

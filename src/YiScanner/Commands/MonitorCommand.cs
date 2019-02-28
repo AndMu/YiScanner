@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reactive.Concurrency;
 using NLog;
-using Wikiled.YiScanner.Client;
 using Wikiled.YiScanner.Client.Archive;
 using Wikiled.YiScanner.Client.Predicates;
 using Wikiled.YiScanner.Monitoring;
