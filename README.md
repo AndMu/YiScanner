@@ -18,9 +18,8 @@ It can also run as Windows service.
   "Output": {
     "Compress": false,
     "Images": false,
-    "Out": "D:/Cloud/GoogleUni/Camera/Monitor"
-  },  
-  "Action": null,
+    "Out": "D:/Monitor"
+  },    
   "AutoDiscovery": {
     "On": true,
     "NetworkMask": "192.168.0.0/255.255.255.0"
@@ -31,11 +30,6 @@ It can also run as Windows service.
     "Password": "",
     "Login": "root",
     "FileMask": "*.mp4"
-  },
-
-  "Server": {
-    "Path": "CCTV",
-	"Port": 21	
   }
 } 
 ```
@@ -77,10 +71,28 @@ If you want some action to be executed on each retrieved image:
 
 ## Manual YI Camera setup
 
-"Known":{
+```
+{
+  "Scan": 30,
+  "Timeout": 1200,
+  "Archive": 2,
+  "Output": {
+    "Compress": false,
+    "Images": false,
+    "Out": "D:/Monitor"
+  },  
+  "YiFtp": {
+    "Path": "/tmp/sd/record/",
+    "Password": "",
+    "Login": "root",
+    "FileMask": "*.mp4"
+  },
+  "Known":{
     "Cameras": "1080i",
     "Hosts": "192.168.0.22"
     }
+} 
+```
 
 If you don't want automatic camera discovery, you can predefine list of cameras.
 
